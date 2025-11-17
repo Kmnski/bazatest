@@ -1,0 +1,44 @@
+
+.action-buttons-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-buttons-centered .view-btn,
+.action-buttons-centered .edit-btn,
+.action-buttons-centered .delete-btn {
+  margin: 2px;
+}
+
+
+.s-table table th:last-child,
+.s-table table td:last-child {
+  text-align: center;
+}
+
+
+.edit-btn {
+  background-color: #ffc107;
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 0 2px;
+}
+
+.edit-btn:hover {
+  background-color: #e0a800;
+  color: #000;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}

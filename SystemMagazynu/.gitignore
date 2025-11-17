@@ -1,0 +1,20 @@
+echo "# -----------------------------
+# Visual Studio / C# / .NET
+# -----------------------------
+bin/
+obj/
+TestResults/
+*.vs/
+*.user
+*.suo
+*.vscode/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
+# Rider
+.idea/" > SystemMagazynu/.gitignore

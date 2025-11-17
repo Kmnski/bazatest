@@ -1,0 +1,256 @@
+/* ApprovalPanel.css - Specyficzne style tylko dla panelu zatwierdzania */
+.approval-panel {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.approval-panel * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.approval-panel-body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.approval-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.approval-header {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.approval-header h1 {
+    font-size: 24px;
+}
+
+.approval-nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.approval-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.approval-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.approval-btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.approval-btn-success {
+    background: #27ae60;
+    color: white;
+}
+
+.approval-btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.approval-btn-warning {
+    background: #f39c12;
+    color: white;
+}
+
+.approval-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.approval-content {
+    padding: 30px;
+}
+
+.approval-documents-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.approval-document-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.approval-document-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.approval-document-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.approval-document-type {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.approval-document-number {
+    color: #7f8c8d;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.approval-document-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.approval-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.approval-detail-label {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 3px;
+}
+
+.approval-detail-value {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.approval-positions-list {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.approval-position-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.approval-position-item:last-child {
+    border-bottom: none;
+}
+
+.approval-document-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.approval-status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.approval-status-pending {
+    background: #f39c12;
+    color: white;
+}
+
+.approval-status-approved {
+    background: #27ae60;
+    color: white;
+}
+
+.approval-status-rejected {
+    background: #e74c3c;
+    color: white;
+}
+
+.approval-section-title {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3498db;
+}
+
+.approval-empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #7f8c8d;
+}
+
+.approval-empty-state div {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.approval-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.approval-error-banner {
+    background: #ffeaa7;
+    border: 1px solid #fdcb6e;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #e17055;
+}
+
+.approval-error-banner button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #e17055;
+}
+
+/* Reset dla elementów wewnątrz approval panel */
+.approval-panel table,
+.approval-panel th,
+.approval-panel td,
+.approval-panel tr {
+    all: unset;
+}

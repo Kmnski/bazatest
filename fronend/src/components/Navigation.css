@@ -1,0 +1,19 @@
+.nav {
+    background: #34495e;
+    padding: 0 30px;
+    display: flex;
+    gap: 0;
+}
+
+.nav a {
+    color: white;
+    padding: 15px 20px;
+    text-decoration: none;
+    transition: background 0.3s;
+    border-bottom: 3px solid transparent;
+}
+
+.nav a:hover, .nav a.active {
+    background: #3d566e;
+    border-bottom-color: #3498db;
+}
