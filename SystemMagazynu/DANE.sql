@@ -82,7 +82,7 @@ INSERT INTO Dokumenty (IdDokumentu, Typ, Data, Status, NumerDokumentu, DostawcaI
 (3, 'PZ', '2024-01-17', 'zatwierdzony', 'PZ/2024/002', 2, NULL, 2, 1),
 (4, 'WZ', '2024-01-18', 'zatwierdzony', 'WZ/2024/002', NULL, 2, 2, 1),
 (5, 'PZ', '2024-01-19', 'oczekujacy', 'PZ/2024/003', 3, NULL, 3, 1),
-(6, 'WZ', '2024-01-20', 'odrzucony', 'WZ/2024/003', NULL, 3, 3, 1);
+(6, 'WZ', '2024-01-20', 'zatwierdzony', 'WZ/2024/003', NULL, 3, 3, 1);
 
 SET IDENTITY_INSERT Dokumenty OFF;
 

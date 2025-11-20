@@ -29,7 +29,7 @@ function DocumentView({ user, onLogout }) {
       
     } catch (error) {
       console.error('Błąd pobierania dokumentu:', error);
-      alert('Błąd podczas pobierania dokumentu');
+      
     } finally {
       setLoading(false);
     }

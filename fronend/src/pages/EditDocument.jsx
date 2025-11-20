@@ -307,10 +307,10 @@ function EditDocument({ user, onLogout }) {
   const addPosition = () => {
     setFormData(prev => ({
       ...prev,
-      pozycje: [...prev.pozycje, { 
-        materialId: '', 
-        ilosc: '', 
-        materialNazwa: '', 
+      pozycje: [...prev.pozycje, {
+        materialId: '',
+        ilosc: '',
+        materialNazwa: '',
         materialJednostka: '',
         maxIlosc: null
       }]
@@ -509,8 +509,8 @@ function EditDocument({ user, onLogout }) {
               </div>
               <div className="form-group">
                 <label htmlFor="documentDate">Data dokumentu:</label>
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   id="documentDate"
                   name="data"
                   value={formData.data}
@@ -519,17 +519,7 @@ function EditDocument({ user, onLogout }) {
                 />
               </div>
             </div>
-            <div className="form-group">
-              <label htmlFor="documentNotes">Uwagi:</label>
-              <textarea 
-                id="documentNotes"
-                name="uwagi"
-                rows="3" 
-                placeholder="Dodatkowe uwagi do dokumentu..."
-                value={formData.uwagi}
-                onChange={handleInputChange}
-              />
-            </div>
+            
           </div>
 
           {/* Magazyn */}

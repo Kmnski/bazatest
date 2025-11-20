@@ -56,13 +56,13 @@ const UsersManagement = () => {
                 console.log('Wysyłane dane:', requestData);
                 
                 await authAPI.dodajRole(requestData);
-                alert(`Rola użytkownika ${user.email} została zmieniona`);
+                
                 fetchUsers(); // Odśwież listę
             }
         } catch (err) {
             console.error('Błąd zmiany roli użytkownika:', err);
             console.error('Szczegóły błędu:', err.response?.data);
-            alert('Nie udało się zmienić roli użytkownika. Sprawdź konsolę.');
+            
         } finally {
             setActionLoading(null);
         }

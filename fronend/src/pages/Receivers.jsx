@@ -42,29 +42,29 @@ function Receivers({ user, onLogout }) {
         };
         
         await receiversAPI.updateReceiver(receiverModal.editingReceiver.idOdbiorcy, receiverDataWithId);
-        alert('Odbiorca zaktualizowany!');
+        
       } else {
         await receiversAPI.createReceiver(receiverModal.formData);
-        alert('Odbiorca dodany!');
+        
       }
       
       receiverModal.closeModal();
       fetchOdbiorcy(); // Odśwież listę
     } catch (error) {
       console.error('Błąd zapisywania odbiorcy:', error);
-      alert('Błąd podczas zapisywania odbiorcy: ' + (error.response?.data?.message || error.message));
+      
     }
   };
 
   const deleteReceiver = async (id) => {
-    if (window.confirm('Czy na pewno chcesz usunąć tego odbiorcę?\n\nUWAGA: Odbiorca zostanie ukryty, ale pozostanie w bazie danych ze względu na powiązane dokumenty.')) {
+    if (window.confirm('Czy na pewno chcesz usunąć tego odbiorcę?')) {
       try {
         await receiversAPI.deleteReceiver(id);
-        alert('Odbiorca został ukryty!');
+        
         fetchOdbiorcy();
       } catch (error) {
         console.error('Błąd usuwania odbiorcy:', error);
-        alert('Błąd podczas usuwania odbiorcy: ' + (error.response?.data?.message || error.message));
+        
       }
     }
   };

@@ -306,172 +306,184 @@ public class DokumentController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> PutDokument(int id, DokumentUpdateDto dokumentDto, CancellationToken cancellationToken = default)
     {
-        // ZnajdŸ istniej¹cy dokument
-        var dokument = await _context.Dokumenty
-            .Include(d => d.Pozycje)
-            .FirstOrDefaultAsync(d => d.IdDokumentu == id);
+        var strategy = _context.Database.CreateExecutionStrategy();
+        IActionResult result = null!;
 
-        if (dokument == null)
+        await strategy.ExecuteAsync(async () =>
         {
-            return NotFound();
-        }
-
-        // ZABLOKUJ EDYCJÊ WSZYSTKICH STATUSÓW OPRÓCZ "odrzucony"
-        if (dokument.Status != "odrzucony")
-        {
-            return BadRequest($"Nie mo¿na edytowaæ dokumentu ze statusem: {dokument.Status}. Edycja mo¿liwa tylko dla dokumentów odrzuconych.");
-        }
-
-        // Walidacja (taka sama jak wczeœniej)
-        if ((dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW") && (dokumentDto.DostawcaId == null || dokumentDto.DostawcaId == 0))
-            return BadRequest("Dostawca jest wymagany dla dokumentów przyjêcia");
-
-        if ((dokumentDto.Typ == "WZ" || dokumentDto.Typ == "RW") && (dokumentDto.OdbiorcaId == null || dokumentDto.OdbiorcaId == 0))
-            return BadRequest("Odbiorca jest wymagany dla dokumentów wydania");
-
-        // SprawdŸ czy magazyn istnieje
-        var magazyn = await _context.Magazyny.FindAsync(dokumentDto.MagazynId);
-        if (magazyn == null) return BadRequest("Magazyn nie istnieje");
-
-        // SprawdŸ czy kontrahenci istniej¹
-        if (dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW")
-        {
-            var dostawca = await _context.Dostawcy.FindAsync(dokumentDto.DostawcaId);
-            if (dostawca == null) return BadRequest("Dostawca nie istnieje");
-        }
-        else
-        {
-            var odbiorca = await _context.Odbiorcy.FindAsync(dokumentDto.OdbiorcaId);
-            if (odbiorca == null) return BadRequest("Odbiorca nie istnieje");
-        }
-
-        // WALIDACJA MATERIA£ÓW
-        foreach (var pozycja in dokumentDto.Pozycje)
-        {
-            var material = await _context.Materialy.FindAsync(pozycja.MaterialId);
-            if (material == null)
-                return BadRequest($"Material o ID {pozycja.MaterialId} nie istnieje");
-
-            // DLA WZ - SPRAWD DOSTÊPNOŒÆ MATERIA£ÓW
-            if (dokumentDto.Typ == "WZ")
-            {
-                var stanMagazynowy = await _context.StanyMagazynowe
-                    .FirstOrDefaultAsync(sm => sm.MagazynId == dokumentDto.MagazynId &&
-                                             sm.MaterialId == pozycja.MaterialId);
-
-                var zarezerwowane = await _context.RezerwacjeMaterialow
-                    .Where(r => r.MagazynId == dokumentDto.MagazynId &&
-                               r.MaterialId == pozycja.MaterialId &&
-                               r.Status == "aktywna" &&
-                               r.DokumentId != id) // Wyklucz aktualny dokument
-                    .SumAsync(r => (decimal?)r.ZarezerwowanaIlosc) ?? 0;
-
-                var dostepnaIlosc = (stanMagazynowy?.Ilosc ?? 0) - zarezerwowane;
-
-                if (dostepnaIlosc < pozycja.Ilosc)
-                {
-                    return BadRequest($"Niewystarczaj¹ca iloœæ materia³u '{material.Nazwa}'. Dostêpne: {dostepnaIlosc}, ¿¹dane: {pozycja.Ilosc}");
-                }
-            }
-        }
-
-       
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
             {
-                // 1. Walidacja (ca³a istniej¹ca logika – bez zmian)
+                var dokument = await _context.Dokumenty
+                    .Include(d => d.Pozycje)
+                    .FirstOrDefaultAsync(d => d.IdDokumentu == id, cancellationToken);
 
-                // 2. Generowanie numeru
+                if (dokument == null) { result = NotFound(); return; }
+                if (dokument.Status != "odrzucony")
+                {
+                    result = BadRequest($"Nie mo¿na edytowaæ dokumentu ze statusem: {dokument.Status}. Edycja mo¿liwa tylko dla dokumentów odrzuconych.");
+                    return;
+                }
+
+                // Walidacja kontrahenta
+                if ((dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW") && (dokumentDto.DostawcaId == null || dokumentDto.DostawcaId == 0))
+                {
+                    result = BadRequest("Dostawca jest wymagany dla dokumentów przyjêcia");
+                    return;
+                }
+                if ((dokumentDto.Typ == "WZ" || dokumentDto.Typ == "RW") && (dokumentDto.OdbiorcaId == null || dokumentDto.OdbiorcaId == 0))
+                {
+                    result = BadRequest("Odbiorca jest wymagany dla dokumentów wydania");
+                    return;
+                }
+
+                // Walidacja magazynu
+                var magazyn = await _context.Magazyny.FindAsync(new object[] { dokumentDto.MagazynId }, cancellationToken);
+                if (magazyn == null) { result = BadRequest("Magazyn nie istnieje"); return; }
+
+                // Walidacja kontrahentów
+                if (dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW")
+                {
+                    var dostawca = await _context.Dostawcy.FindAsync(new object[] { dokumentDto.DostawcaId }, cancellationToken);
+                    if (dostawca == null) { result = BadRequest("Dostawca nie istnieje"); return; }
+                }
+                else
+                {
+                    var odbiorca = await _context.Odbiorcy.FindAsync(new object[] { dokumentDto.OdbiorcaId }, cancellationToken);
+                    if (odbiorca == null) { result = BadRequest("Odbiorca nie istnieje"); return; }
+                }
+
+                // Walidacja materia³ów
+                foreach (var pozycja in dokumentDto.Pozycje)
+                {
+                    var material = await _context.Materialy.FindAsync(new object[] { pozycja.MaterialId }, cancellationToken);
+                    if (material == null) { result = BadRequest($"Material o ID {pozycja.MaterialId} nie istnieje"); return; }
+
+                    if (dokumentDto.Typ == "WZ")
+                    {
+                        var stanMagazynowy = await _context.StanyMagazynowe
+                            .FirstOrDefaultAsync(sm => sm.MagazynId == dokumentDto.MagazynId && sm.MaterialId == pozycja.MaterialId, cancellationToken);
+
+                        var zarezerwowane = await _context.RezerwacjeMaterialow
+                            .Where(r => r.MagazynId == dokumentDto.MagazynId && r.MaterialId == pozycja.MaterialId && r.Status == "aktywna" && r.DokumentId != id)
+                            .SumAsync(r => (decimal?)r.ZarezerwowanaIlosc, cancellationToken) ?? 0;
+
+                        var dostepnaIlosc = (stanMagazynowy?.Ilosc ?? 0) - zarezerwowane;
+                        if (dostepnaIlosc < pozycja.Ilosc)
+                        {
+                            result = BadRequest($"Niewystarczaj¹ca iloœæ materia³u '{material.Nazwa}'. Dostêpne: {dostepnaIlosc}, ¿¹dane: {pozycja.Ilosc}");
+                            return;
+                        }
+                    }
+                }
+
+                // Generowanie nowego numeru dokumentu
                 var numerDokumentu = await GenerujNumerDokumentuAsync(dokumentDto.Typ, dokumentDto.Data, cancellationToken);
 
-                // 3. Tworzenie NOWEGO dokumentu (Twoja logika – bez zmian)
-                var nowyDokument = new Dokument
-                {
-                    Typ = dokumentDto.Typ,
-                    Data = dokumentDto.Data,
-                    Status = "oczekujacy",
-                    MagazynId = dokumentDto.MagazynId,
-                    DostawcaId = dokumentDto.DostawcaId,
-                    OdbiorcaId = dokumentDto.OdbiorcaId,
-                    UzytkownikId = dokument.UzytkownikId,
-                    NumerDokumentu = numerDokumentu,
-                    Pozycje = dokumentDto.Pozycje.Select(p => new PozycjaDokumentu
-                    {
-                        MaterialId = p.MaterialId,
-                        Ilosc = p.Ilosc
-                    }).ToList()
-                };
+                // Aktualizacja dokumentu za pomoc¹ natywnego SQL
+                await _context.Database.ExecuteSqlRawAsync(
+                    "UPDATE Dokumenty SET Typ = {0}, Data = {1}, MagazynId = {2}, DostawcaId = {3}, OdbiorcaId = {4}, Status = {5}, NumerDokumentu = {6} WHERE IdDokumentu = {7}",
+                    dokumentDto.Typ,
+                    dokumentDto.Data,
+                    dokumentDto.MagazynId,
+                    dokumentDto.DostawcaId,
+                    dokumentDto.OdbiorcaId,
+                    "oczekujacy",
+                    numerDokumentu,
+                    dokument.IdDokumentu);
 
-                // 4. ZAPISZ NOWY DOKUMENT
-                _context.Dokumenty.Add(nowyDokument);
+                // Usuñ stare pozycje dokumentu
+                if (dokument.Pozycje.Any())
+                {
+                    var pozycjeIds = dokument.Pozycje.Select(p => p.IdPozycji).ToArray();
+                    await _context.Database.ExecuteSqlRawAsync(
+                        $"DELETE FROM PozycjeDokumentow WHERE IdPozycji IN ({string.Join(",", pozycjeIds)})");
+                }
+
+                // Dodaj nowe pozycje dokumentu
+                foreach (var p in dokumentDto.Pozycje)
+                {
+                    await _context.Database.ExecuteSqlRawAsync(
+                        "INSERT INTO PozycjeDokumentow (DokumentId, Ilosc, MaterialId) VALUES ({0}, {1}, {2})",
+                        dokument.IdDokumentu,
+                        p.Ilosc,
+                        p.MaterialId);
+                }
+
+                // Zaloguj operacjê
+                await LoggerService.ZapiszOperacjeAsync(_context, nameof(DokumentController), nameof(PutDokument),
+                    $"Zaktualizowano dokument {dokumentDto.Typ}/{numerDokumentu} (ID: {dokument.IdDokumentu})");
+
+                await transaction.CommitAsync(cancellationToken);
+                result = Ok(new { message = "Dokument zosta³ zaktualizowany", documentId = dokument.IdDokumentu });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                await LoggerService.ZapiszBladBezOutputAsync(_context, nameof(DokumentController), nameof(PutDokument), ex);
+                result = StatusCode(500, "B³¹d serwera podczas aktualizacji dokumentu.");
+            }
+        });
+
+        return result;
+    }
+
+
+
+
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteDokument(int id)
+    {
+        var strategy = _context.Database.CreateExecutionStrategy();
+        IActionResult result = null!;
+
+        await strategy.ExecuteAsync(async () =>
+        {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var dokument = await _context.Dokumenty
+                    .Include(d => d.Pozycje)
+                    .FirstOrDefaultAsync(d => d.IdDokumentu == id);
+
+                if (dokument == null) { result = NotFound(); return; }
+
+                if (dokument.Typ == "WZ")
+                {
+                    var rezerwacje = await _context.RezerwacjeMaterialow
+                        .Where(r => r.DokumentId == id)
+                        .ToListAsync();
+
+                    if (rezerwacje.Any())
+                        _context.RezerwacjeMaterialow.RemoveRange(rezerwacje);
+                }
+
+                if (dokument.Pozycje.Any())
+                    _context.PozycjeDokumentow.RemoveRange(dokument.Pozycje);
+
+                _context.Dokumenty.Remove(dokument);
                 await _context.SaveChangesAsync();
 
-                // 5. SUKCES – logujemy operacjê
-                await LoggerService.ZapiszOperacjeAsync(_context,
-                    nameof(DokumentController),
-                    nameof(PutDokument),
-                    $"Zaktualizowano dokument {nowyDokument.Typ}/{nowyDokument.NumerDokumentu} (ID: {nowyDokument.IdDokumentu})");
+                await LoggerService.ZapiszOperacjeAsync(_context, nameof(DokumentController), nameof(DeleteDokument),
+                    $"Usuniêto dokument {dokument.Typ}/{dokument.NumerDokumentu} (ID: {dokument.IdDokumentu})");
 
                 await transaction.CommitAsync();
-                return Ok(new { message = "Dokument zosta³ zaktualizowany", newDocumentId = nowyDokument.IdDokumentu });
+                result = NoContent();
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                await LoggerService.ZapiszB³adAsync(_context, nameof(DokumentController), nameof(PutDokument), ex);
-                return StatusCode(500, "B³¹d serwera podczas aktualizacji dokumentu.");
+                await LoggerService.ZapiszB³adAsync(_context, nameof(DokumentController), nameof(DeleteDokument), ex);
+                result = StatusCode(500, "B³¹d serwera podczas usuwania dokumentu.");
             }
-        }
+        });
 
-        [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteDokument(int id)
-    {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-        try
-        {
-            var dokument = await _context.Dokumenty
-                .Include(d => d.Pozycje)
-                .FirstOrDefaultAsync(d => d.IdDokumentu == id);
-
-            if (dokument == null)
-                return NotFound();
-
-            // TYLKO DLA WZ - USUÑ REZERWACJE
-            if (dokument.Typ == "WZ")
-            {
-                var rezerwacje = await _context.RezerwacjeMaterialow
-                    .Where(r => r.DokumentId == id)
-                    .ToListAsync();
-
-                if (rezerwacje.Any())
-                    _context.RezerwacjeMaterialow.RemoveRange(rezerwacje);
-            }
-
-            // USUÑ POZYCJE DOKUMENTU
-            if (dokument.Pozycje.Any())
-                _context.PozycjeDokumentow.RemoveRange(dokument.Pozycje);
-
-            // USUÑ DOKUMENT
-            _context.Dokumenty.Remove(dokument);
-            await _context.SaveChangesAsync();
-
-            //SUKCES – logujemy operacjê
-            await LoggerService.ZapiszOperacjeAsync(_context,
-                nameof(DokumentController),
-                nameof(DeleteDokument),
-                $"Usuniêto dokument {dokument.Typ}/{dokument.NumerDokumentu} (ID: {dokument.IdDokumentu})");
-
-            await transaction.CommitAsync();
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            await LoggerService.ZapiszB³adAsync(_context, nameof(DokumentController), nameof(DeleteDokument), ex);
-            return StatusCode(500, "B³¹d serwera podczas usuwania dokumentu.");
-        }
+        return result;
     }
+
 
     private bool DokumentExists(int id)
     {
@@ -639,5 +651,7 @@ public class DokumentController : ControllerBase
             return StatusCode(500, $"B³¹d: {ex.Message}");
         }
     }
+
+
 
 }

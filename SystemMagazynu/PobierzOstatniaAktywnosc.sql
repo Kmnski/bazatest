@@ -12,7 +12,7 @@ RETURN
         d.NumerDokumentu AS Numer,
         CASE
             WHEN d.Typ = 'PZ' THEN
-                'Przyj�cie od ' + ISNULL(ds.Nazwa, '') + ' (' + CAST((SELECT SUM(Ilosc) FROM PozycjeDokumentow WHERE DokumentId = d.IdDokumentu) AS VARCHAR) + ' szt.)'
+                'Przyjęcie od ' + ISNULL(ds.Nazwa, '') + ' (' + CAST((SELECT SUM(Ilosc) FROM PozycjeDokumentow WHERE DokumentId = d.IdDokumentu) AS VARCHAR) + ' szt.)'
             WHEN d.Typ = 'WZ' THEN
                 'Wydanie do ' + ISNULL(od.Nazwa, '') + ' (' + CAST((SELECT SUM(Ilosc) FROM PozycjeDokumentow WHERE DokumentId = d.IdDokumentu) AS VARCHAR) + ' szt.)'
             ELSE d.Typ + ' - ' + d.NumerDokumentu

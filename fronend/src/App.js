@@ -87,8 +87,8 @@ function App() {
           <Route path="/approval-panel" element={<ApprovalPanel user={user} onLogout={handleLogout} />} />
           <Route path="/users-management" element={<UserManagement user={user} onLogout={handleLogout} />} />
           <Route path="/document-edit/:id" element={<EditDocument user={user} onLogout={handleLogout} />}/>
-          <Route path="/documents/new-pz" element={<NewPZ user={user} />} />
-          <Route path="/documents/new-wz" element={<NewWZ user={user} />} />
+          <Route path="/documents/new-pz" element={<NewPZ user={user} onLogout={handleLogout} />} />
+          <Route path="/documents/new-wz" element={<NewWZ user={user} onLogout={handleLogout} />} />
           
 
         </Route>

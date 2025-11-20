@@ -56,14 +56,14 @@ function Documents({ user, onLogout }) {
   };
 
   const deleteDocument = async (id) => {
-    if (window.confirm('Czy na pewno chcesz usunąć ten dokument? Tej operacji nie można cofnąć.')) {
+    if (window.confirm('Czy na pewno chcesz usunąć ten dokument?')) {
       try {
         await documentsAPI.deleteDokument(id); 
-        alert('Dokument został usunięty');
+        
         fetchDokumenty();
       } catch (error) {
         console.error('Błąd usuwania dokumentu:', error);
-        alert('Błąd podczas usuwania dokumentu');
+        
       }
     }
   };

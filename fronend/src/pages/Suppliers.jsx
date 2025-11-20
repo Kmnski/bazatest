@@ -34,10 +34,10 @@ function Suppliers({ user, onLogout }) {
         };
         
         await suppliersAPI.updateSupplier(supplierModal.editingSupplier.idDostawcy, supplierDataWithId);
-        alert('Dostawca zaktualizowany!');
+        
       } else {
         await suppliersAPI.createSupplier(supplierModal.formData);
-        alert('Dostawca dodany!');
+        
       }
       
       supplierModal.closeModal();
@@ -52,11 +52,11 @@ function Suppliers({ user, onLogout }) {
     if (window.confirm('Czy na pewno chcesz usunąć tego dostawcę?')) {
       try {
         await suppliersAPI.deleteSupplier(id);
-        alert('Dostawca usunięty!');
+        
         fetchDostawcy();
       } catch (error) {
         console.error('Błąd usuwania dostawcy:', error);
-        alert('Błąd podczas usuwania dostawcy');
+        
       }
     }
   };

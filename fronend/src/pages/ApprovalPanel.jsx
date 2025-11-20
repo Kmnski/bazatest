@@ -33,12 +33,12 @@ const ApprovalPanel = () => {
             
             if (window.confirm('Czy na pewno chcesz zatwierdzić ten dokument?')) {
                 await documentsAPI.approveDocument(docId);
-                alert('Dokument został zatwierdzony pomyślnie');
+                
                 fetchPendingDocuments();
             }
         } catch (err) {
             console.error('Błąd zatwierdzania dokumentu:', err);
-            alert('Nie udało się zatwierdzić dokumentu');
+            
         } finally {
             setActionLoading(null);
         }
@@ -50,12 +50,12 @@ const ApprovalPanel = () => {
             
             if (window.confirm('Czy na pewno chcesz odrzucić ten dokument?')) {
                 await documentsAPI.rejectDocument(docId);
-                alert('Dokument został odrzucony pomyślnie');
+                
                 fetchPendingDocuments();
             }
         } catch (err) {
             console.error('Błąd odrzucania dokumentu:', err);
-            alert('Nie udało się odrzucić dokumentu');
+            
         } finally {
             setActionLoading(null);
         }

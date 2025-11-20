@@ -36,4 +36,31 @@ public static class LoggerService
 		context.LogiBledow.Add(log);
 		await context.SaveChangesAsync();
 	}
+
+    public static async Task ZapiszBladBezOutputAsync(MagazynDbContext context, string kontroler, string akcja, Exception ex)
+    {
+        try
+        {
+            // Utwórz nowy kontekst dla logowania, aby unikn¹æ konfliktów
+            using var logContext = new MagazynDbContext(new DbContextOptionsBuilder<MagazynDbContext>()
+                .UseSqlServer(context.Database.GetConnectionString())
+                .Options);
+
+            var logBledu = new LogBledu
+            {
+                Kontroler = kontroler,
+                Akcja = akcja,
+                Data = DateTime.Now,
+                Komunikat = ex.Message,
+                StackTrace = ex.StackTrace
+            };
+
+            logContext.LogiBledow.Add(logBledu);
+            await logContext.SaveChangesAsync();
+        }
+        catch
+        {
+            // Jeœli logowanie siê nie uda, zignoruj b³¹d aby nie maskowaæ oryginalnego wyj¹tku
+        }
+    }
 }
