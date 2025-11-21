@@ -45,7 +45,7 @@ namespace SystemMagazynu.DTOs
         public decimal Ilosc { get; set; }
         public int MaterialId { get; set; }
         public string MaterialNazwa { get; set; } = string.Empty;
-        public string MaterialOpis { get; set; } = string.Empty;
+        
         public string MaterialJednostka { get; set; } = string.Empty;
     }
 

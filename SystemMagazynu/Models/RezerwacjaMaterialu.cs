@@ -14,7 +14,9 @@ public class RezerwacjaMaterialu
 	
 
 	// Relacje
-	public Material Material { get; set; }
-	public Magazyn Magazyn { get; set; }
-	public Dokument Dokument { get; set; }
+	public required Material Material { get; set; }
+	public required Magazyn Magazyn { get; set; }
+	public required Dokument Dokument { get; set; }
+
+
 }

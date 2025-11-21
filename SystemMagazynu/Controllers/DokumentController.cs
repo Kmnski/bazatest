@@ -344,18 +344,17 @@ public class DokumentController : ControllerBase
                 }
 
                 // Walidacja magazynu
-                var magazyn = await _context.Magazyny.FindAsync(new object[] { dokumentDto.MagazynId }, cancellationToken);
+                Magazyn? magazyn = await _context.Magazyny.FindAsync(new object[] { dokumentDto.MagazynId }, cancellationToken);
                 if (magazyn == null) { result = BadRequest("Magazyn nie istnieje"); return; }
 
-                // Walidacja kontrahentów
                 if (dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW")
                 {
-                    var dostawca = await _context.Dostawcy.FindAsync(new object[] { dokumentDto.DostawcaId }, cancellationToken);
+                    Dostawca? dostawca = await _context.Dostawcy.FindAsync(new object[] { dokumentDto.DostawcaId }, cancellationToken);
                     if (dostawca == null) { result = BadRequest("Dostawca nie istnieje"); return; }
                 }
                 else
                 {
-                    var odbiorca = await _context.Odbiorcy.FindAsync(new object[] { dokumentDto.OdbiorcaId }, cancellationToken);
+                    Odbiorca? odbiorca = await _context.Odbiorcy.FindAsync(new object[] { dokumentDto.OdbiorcaId }, cancellationToken);
                     if (odbiorca == null) { result = BadRequest("Odbiorca nie istnieje"); return; }
                 }
 
@@ -392,8 +391,8 @@ public class DokumentController : ControllerBase
                     dokumentDto.Typ,
                     dokumentDto.Data,
                     dokumentDto.MagazynId,
-                    dokumentDto.DostawcaId,
-                    dokumentDto.OdbiorcaId,
+                    dokumentDto.DostawcaId ?? 0,
+                    dokumentDto.OdbiorcaId ?? 0,
                     "oczekujacy",
                     numerDokumentu,
                     dokument.IdDokumentu);
@@ -561,7 +560,6 @@ public class DokumentController : ControllerBase
                 Ilosc = p.Ilosc,
                 MaterialId = p.MaterialId,
                 MaterialNazwa = p.Material.Nazwa,
-                MaterialOpis = p.Material.Opis,
                 MaterialJednostka = p.Material.Jednostka
             })
             .ToListAsync();
