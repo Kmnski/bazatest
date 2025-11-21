@@ -7,7 +7,7 @@ using SystemMagazynu.DTOs;
 using SystemMagazynu.Services;
 using System;
 using System.Threading;
-
+using Microsoft.Data.SqlClient;
 namespace SystemMagazynu.Controllers;
 
 [ApiController]
@@ -152,15 +152,9 @@ public class DokumentController : ControllerBase
                     {
                         var stanMagazynowy = await _context.StanyMagazynowe
                             .FirstOrDefaultAsync(sm => sm.MagazynId == dokumentDto.MagazynId &&
-                                                     sm.MaterialId == pozycja.MaterialId);
+                               sm.MaterialId == pozycja.MaterialId);
 
-                        var zarezerwowane = await _context.RezerwacjeMaterialow
-                            .Where(r => r.MagazynId == dokumentDto.MagazynId &&
-                                       r.MaterialId == pozycja.MaterialId &&
-                                       r.Status == "aktywna")
-                            .SumAsync(r => (decimal?)r.ZarezerwowanaIlosc) ?? 0;
-
-                        var dostepnaIlosc = (stanMagazynowy?.Ilosc ?? 0) - zarezerwowane;
+                        var dostepnaIlosc = stanMagazynowy?.Ilosc ?? 0;
 
                         if (dostepnaIlosc < pozycja.Ilosc)
                             return BadRequest($"Niewystarczaj¹ca iloœæ materia³u '{material.Nazwa}'. Dostêpne: {dostepnaIlosc}, ¿¹dane: {pozycja.Ilosc}");
@@ -180,35 +174,47 @@ public class DokumentController : ControllerBase
                     DostawcaId = dokumentDto.DostawcaId,
                     OdbiorcaId = dokumentDto.OdbiorcaId,
                     MagazynId = dokumentDto.MagazynId,
-                    UzytkownikId = dokumentDto.UzytkownikId,
-                    Pozycje = dokumentDto.Pozycje.Select(p => new PozycjaDokumentu
-                    {
-                        Ilosc = p.Ilosc,
-                        MaterialId = p.MaterialId
-                    }).ToList()
+                    UzytkownikId = dokumentDto.UzytkownikId
                 };
 
+                // dodajemy dokument bez pozycji
                 _context.Dokumenty.Add(dokument);
                 await _context.SaveChangesAsync();
 
-                // 7. Rezerwacja materia³ów (dla WZ)
+                foreach (var p in dokumentDto.Pozycje)
+                {
+                    var pozycja = new PozycjaDokumentu
+                    {
+                        DokumentId = dokument.IdDokumentu,
+                        Ilosc = p.Ilosc,
+                        MaterialId = p.MaterialId
+                    };
+                    _context.PozycjeDokumentow.Add(pozycja);
+                }
+                await _context.SaveChangesAsync();
+
+
+                // 7. Rezerwacja materia³ów (dla WZ) - rêczny insert
                 if (dokumentDto.Typ == "WZ")
                 {
-                    foreach (var pozycja in dokumentDto.Pozycje)
+                    var sql = @"
+        INSERT INTO RezerwacjeMaterialow 
+            (MaterialId, MagazynId, DokumentId, ZarezerwowanaIlosc, DataRezerwacji)
+        VALUES (@MaterialId, @MagazynId, @DokumentId, @ZarezerwowanaIlosc, @DataRezerwacji)";
+
+                    foreach (var p in dokumentDto.Pozycje)
                     {
-                        var rezerwacja = new RezerwacjaMaterialu
-                        {
-                            MaterialId = pozycja.MaterialId,
-                            MagazynId = dokumentDto.MagazynId,
-                            DokumentId = dokument.IdDokumentu,
-                            ZarezerwowanaIlosc = pozycja.Ilosc,
-                            DataRezerwacji = DateTime.Now,
-                            Status = "aktywna"
-                        };
-                        _context.RezerwacjeMaterialow.Add(rezerwacja);
+                        await _context.Database.ExecuteSqlRawAsync(sql,
+                            new SqlParameter("@MaterialId", p.MaterialId),
+                            new SqlParameter("@MagazynId", dokumentDto.MagazynId),
+                            new SqlParameter("@DokumentId", dokument.IdDokumentu),
+                            new SqlParameter("@ZarezerwowanaIlosc", p.Ilosc),
+                            new SqlParameter("@DataRezerwacji", DateTime.Now)
+                        );
                     }
-                    await _context.SaveChangesAsync();
                 }
+
+
 
                 // 8. Za³adowanie powi¹zañ
                 await _context.Entry(dokument).Reference(d => d.Dostawca).LoadAsync();
@@ -365,7 +371,7 @@ public class DokumentController : ControllerBase
                             .FirstOrDefaultAsync(sm => sm.MagazynId == dokumentDto.MagazynId && sm.MaterialId == pozycja.MaterialId, cancellationToken);
 
                         var zarezerwowane = await _context.RezerwacjeMaterialow
-                            .Where(r => r.MagazynId == dokumentDto.MagazynId && r.MaterialId == pozycja.MaterialId && r.Status == "aktywna" && r.DokumentId != id)
+                            .Where(r => r.MagazynId == dokumentDto.MagazynId && r.MaterialId == pozycja.MaterialId && r.DokumentId != id)
                             .SumAsync(r => (decimal?)r.ZarezerwowanaIlosc, cancellationToken) ?? 0;
 
                         var dostepnaIlosc = (stanMagazynowy?.Ilosc ?? 0) - zarezerwowane;

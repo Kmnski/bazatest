@@ -42,10 +42,6 @@ namespace SystemMagazynu.Migrations
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("ZarezerwowanaIlosc")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");

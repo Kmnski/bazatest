@@ -11,7 +11,7 @@ public class RezerwacjaMaterialu
 	public int DokumentId { get; set; }
 	public decimal ZarezerwowanaIlosc { get; set; }
 	public DateTime DataRezerwacji { get; set; }
-	public string Status { get; set; }
+	
 
 	// Relacje
 	public Material Material { get; set; }

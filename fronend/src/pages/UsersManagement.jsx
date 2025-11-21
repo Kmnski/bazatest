@@ -9,6 +9,8 @@ const UsersManagement = () => {
     const [error, setError] = useState(null);
     const [actionLoading, setActionLoading] = useState(null);
     const navigate = useNavigate();
+    const currentUserId = Number(JSON.parse(localStorage.getItem('user'))?.id);
+
 
     const fetchUsers = async () => {
         try {
@@ -18,7 +20,7 @@ const UsersManagement = () => {
             const response = await authAPI.getAllUsers();
             const usersData = response.data || [];
             
-            console.log('Otrzymani użytkownicy:', usersData); // DEBUG
+            console.log('Otrzymani użytkownicy:', usersData);
             
             setUsers(usersData);
             
@@ -32,79 +34,28 @@ const UsersManagement = () => {
     };
 
     const updateUserRole = async (userId, newRole) => {
-        try {
-            setActionLoading(userId);
-            
-            const user = users.find(u => u.id === userId);
-            if (!user) return;
+    try {
+        setActionLoading(userId);
 
-            // Mapuj stringi na wartości enum Rola
-            const roleMap = {
-                'Brak': 0,        // Rola.Brak
-                'Magazynier': 1,  // Rola.Magazynier  
-                'Admin': 2        // Rola.Admin
-            };
+        const roleValue = Number(newRole);
 
-            const roleValue = roleMap[newRole];
-
-            if (window.confirm(`Czy na pewno chcesz zmienić rolę użytkownika ${user.email} na: ${getRoleDisplayName(newRole)}?`)) {
-                const requestData = {
-                    UserId: userId,
-                    Rola: roleValue // Wysyłamy wartość enum (0, 1, 2)
-                };
-                
-                console.log('Wysyłane dane:', requestData);
-                
-                await authAPI.dodajRole(requestData);
-                
-                fetchUsers(); // Odśwież listę
-            }
-        } catch (err) {
-            console.error('Błąd zmiany roli użytkownika:', err);
-            console.error('Szczegóły błędu:', err.response?.data);
-            
-        } finally {
-            setActionLoading(null);
-        }
-    };
-
-    const getRoleDisplayName = (roleValue) => {
-        // roleValue może być liczbą (enum) lub stringiem
-        const roleMap = {
-            0: 'Brak rangi',
-            1: 'Magazynier', 
-            2: 'Admin',
-            'Brak': 'Brak rangi',
-            'Magazynier': 'Magazynier',
-            'Admin': 'Admin'
+        const requestData = {
+            UserId: userId,
+            Rola: roleValue
         };
-        return roleMap[roleValue] || 'Brak rangi';
-    };
 
-    const getRoleBadgeClass = (roleValue) => {
-        const roleMap = {
-            0: 'users-role-none',
-            1: 'users-role-warehouseman', 
-            2: 'users-role-admin',
-            'Brak': 'users-role-none',
-            'Magazynier': 'users-role-warehouseman',
-            'Admin': 'users-role-admin'
-        };
-        return roleMap[roleValue] || 'users-role-none';
-    };
+        console.log('Wysyłane dane:', requestData);
+        await authAPI.dodajRole(requestData);
+        fetchUsers();
+    } catch (err) {
+        console.error('Błąd zmiany roli użytkownika:', err);
+    } finally {
+        setActionLoading(null);
+    }
+};
 
-    const getCurrentRoleValue = (roleValue) => {
-        // Konwertuj wartość enum na string dla selecta
-        const roleMap = {
-            0: 'Brak',
-            1: 'Magazynier',
-            2: 'Admin',
-            'Brak': 'Brak',
-            'Magazynier': 'Magazynier', 
-            'Admin': 'Admin'
-        };
-        return roleMap[roleValue] || 'Brak';
-    };
+
+
 
     const handleLogout = async () => {
         if (window.confirm('Czy na pewno chcesz się wylogować?')) {
@@ -127,9 +78,9 @@ const UsersManagement = () => {
     // Oblicz statystyki - uwzględnij wartości enum
     const stats = {
         totalUsers: users.length,
-        adminUsers: users.filter(u => u.rola === 2 || u.rola === 'Admin').length,
-        warehousemanUsers: users.filter(u => u.rola === 1 || u.rola === 'Magazynier').length,
-        noneUsers: users.filter(u => !u.rola || u.rola === 0 || u.rola === 'Brak').length
+        adminUsers: users.filter(u => u.rola === 2).length,
+        warehousemanUsers: users.filter(u => u.rola === 1).length,
+        noneUsers: users.filter(u => !u.rola || u.rola === 0).length
     };
 
     if (loading) {
@@ -214,16 +165,29 @@ const UsersManagement = () => {
                                             
                                         </div>
                                         <div className="users-user-actions">
-                                            <select 
+                                            <select
                                                 className="users-role-select"
-                                                value={getCurrentRoleValue(user.rola)}
-                                                onChange={(e) => updateUserRole(user.id, e.target.value)}
+                                                value={user.rola ?? 0}
+                                                onChange={async (e) => {
+                                                    const newRole = Number(e.target.value);
+
+                                                    // Zabezpieczenie: administrator nie może sam sobie zmienić roli na magazyniera
+                                                    if (user.id === currentUserId && user.rola === 2 && newRole === 1) {
+                                                        
+                                                        return;
+                                                    }
+
+                                                    await updateUserRole(user.id, newRole);
+                                                }}
                                                 disabled={actionLoading === user.id}
                                             >
-                                                <option value="Brak">Brak rangi</option>
-                                                <option value="Magazynier">Magazynier</option>
-                                                <option value="Admin">Admin</option>
+                                                {/* Opcja "Brak rangi" tylko dla użytkowników bez roli */}
+                                                {(!user.rola || user.rola === 0) && <option value={0}>Brak rangi</option>}
+
+                                                <option value={1} disabled={user.id === currentUserId && user.rola === 2}>Magazynier</option>
+                                                <option value={2}>Admin</option>
                                             </select>
+
                                             
                                         </div>
                                     </div>

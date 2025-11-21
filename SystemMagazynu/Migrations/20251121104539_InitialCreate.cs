@@ -28,6 +28,23 @@ namespace SystemMagazynu.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LogiBledow",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Data = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Kontroler = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Akcja = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Komunikat = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StackTrace = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogiBledow", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Magazyny",
                 columns: table => new
                 {
@@ -196,8 +213,7 @@ namespace SystemMagazynu.Migrations
                     MagazynId = table.Column<int>(type: "int", nullable: false),
                     DokumentId = table.Column<int>(type: "int", nullable: false),
                     ZarezerwowanaIlosc = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
-                    DataRezerwacji = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    DataRezerwacji = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -276,6 +292,9 @@ namespace SystemMagazynu.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "LogiBledow");
+
             migrationBuilder.DropTable(
                 name: "PozycjeDokumentow");
 

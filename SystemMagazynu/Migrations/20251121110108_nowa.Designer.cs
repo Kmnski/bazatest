@@ -12,8 +12,8 @@ using SystemMagazynu.Data;
 namespace SystemMagazynu.Migrations
 {
     [DbContext(typeof(MagazynDbContext))]
-    [Migration("20251117104809_AddLogiBledow")]
-    partial class AddLogiBledow
+    [Migration("20251121110108_nowa")]
+    partial class nowa
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,10 +44,6 @@ namespace SystemMagazynu.Migrations
 
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ZarezerwowanaIlosc")
                         .HasPrecision(10, 2)

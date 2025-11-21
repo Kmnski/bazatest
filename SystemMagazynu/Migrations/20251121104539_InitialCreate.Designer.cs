@@ -12,7 +12,7 @@ using SystemMagazynu.Data;
 namespace SystemMagazynu.Migrations
 {
     [DbContext(typeof(MagazynDbContext))]
-    [Migration("20251116194705_InitialCreate")]
+    [Migration("20251121104539_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -44,10 +44,6 @@ namespace SystemMagazynu.Migrations
 
                     b.Property<int>("MaterialId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ZarezerwowanaIlosc")
                         .HasPrecision(10, 2)
@@ -136,6 +132,34 @@ namespace SystemMagazynu.Migrations
                     b.HasKey("IdDostawcy");
 
                     b.ToTable("Dostawcy");
+                });
+
+            modelBuilder.Entity("SystemMagazynu.Models.LogBledu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Akcja")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Komunikat")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Kontroler")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StackTrace")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LogiBledow");
                 });
 
             modelBuilder.Entity("SystemMagazynu.Models.Magazyn", b =>

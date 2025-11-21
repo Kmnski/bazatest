@@ -5,7 +5,7 @@
 namespace SystemMagazynu.Migrations
 {
     /// <inheritdoc />
-    public partial class AddProceduresAndData : Migration
+    public partial class nowa : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,6 +22,7 @@ namespace SystemMagazynu.Migrations
             // 3. TRIGGERY
             migrationBuilder.Sql(File.ReadAllText("DokumentPoAkceptacji.sql"));
             migrationBuilder.Sql(File.ReadAllText("DokumentPoOdrzuceniu.sql"));
+            migrationBuilder.Sql(File.ReadAllText("RezerwacjaPoDodaniu.sql"));
 
             // 4. DANE - TYLKO JEŚLI TABELE SĄ PUSTE
             migrationBuilder.Sql(@"
@@ -49,6 +50,7 @@ namespace SystemMagazynu.Migrations
 
             migrationBuilder.Sql("DROP TRIGGER IF EXISTS DokumentPoOdrzuceniu;");
             migrationBuilder.Sql("DROP TRIGGER IF EXISTS DokumentPoAkceptacji");
+            migrationBuilder.Sql("DROP TRIGGER IF EXISTS RezerwacjaPoDodaniu");
 
 
             migrationBuilder.Sql(@"

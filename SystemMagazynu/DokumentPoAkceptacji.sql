@@ -1,80 +1,45 @@
-CREATE TRIGGER DokumentPoAkceptacji  
-ON Dokumenty  
-AFTER UPDATE  
-AS  
-BEGIN     
+-- 1. Trigger po zatwierdzeniu dokumentu
+CREATE TRIGGER DokumentPoAkceptacji
+ON Dokumenty
+AFTER UPDATE
+AS
+BEGIN
     SET NOCOUNT ON;
 
-    -- Sprawdzamy czy status zmieni� si� na "zatwierdzony"
-    IF UPDATE(Status)
-    BEGIN
-        -- Dla dokument�w zatwierdzonych
-        DECLARE @DokumentId INT, @Typ VARCHAR(10), @MagazynId INT;
-                
-        DECLARE dokument_cursor CURSOR FOR
-        SELECT 
-            inserted.IdDokumentu, 
-            inserted.Typ, 
-            inserted.MagazynId
-        FROM inserted
-        INNER JOIN deleted ON inserted.IdDokumentu = deleted.IdDokumentu
-        WHERE inserted.Status = 'zatwierdzony' 
-          AND deleted.Status != 'zatwierdzony';
-                
-        OPEN dokument_cursor;
-        FETCH NEXT FROM dokument_cursor INTO @DokumentId, @Typ, @MagazynId;
-                
-        WHILE @@FETCH_STATUS = 0
-        BEGIN
-            -- DLA PZ (PRZYJ�CIE) - DODAJEMY MATERIA�Y DO MAGAZYNU
-            IF @Typ = 'PZ'
-            BEGIN
-                -- Aktualizuj istniej�ce stany magazynowe
-                UPDATE sm
-                SET sm.Ilosc = sm.Ilosc + p.Ilosc
-                FROM StanyMagazynowe sm
-                INNER JOIN PozycjeDokumentow p ON sm.MaterialId = p.MaterialId 
-                WHERE p.DokumentId = @DokumentId 
-                  AND sm.MagazynId = @MagazynId;
-                                
-                -- Dla materia��w kt�re nie maj� jeszcze rekordu w StanyMagazynowe
-                INSERT INTO StanyMagazynowe (MagazynId, MaterialId, Ilosc)
-                SELECT 
-                    @MagazynId, 
-                    p.MaterialId, 
-                    p.Ilosc
-                FROM PozycjeDokumentow p
-                WHERE p.DokumentId = @DokumentId
-                  AND NOT EXISTS (
-                      SELECT 1 
-                      FROM StanyMagazynowe sm 
-                      WHERE sm.MagazynId = @MagazynId 
-                        AND sm.MaterialId = p.MaterialId
-                  );
-            END
-                        
-            -- DLA WZ (WYDANIE) - ODEJMUJEMY MATERIA�Y Z MAGAZYNU
-            ELSE IF @Typ = 'WZ'
-            BEGIN
-                -- Aktualizuj stany magazynowe (odejmij ilo��)
-                UPDATE sm
-                SET sm.Ilosc = sm.Ilosc - p.Ilosc
-                FROM StanyMagazynowe sm
-                INNER JOIN PozycjeDokumentow p ON sm.MaterialId = p.MaterialId 
-                WHERE p.DokumentId = @DokumentId 
-                  AND sm.MagazynId = @MagazynId;
-                                
-                -- Oznacz rezerwacje jako zrealizowane
-                UPDATE RezerwacjeMaterialow
-                SET Status = 'zrealizowana'
-                WHERE DokumentId = @DokumentId 
-                  AND Status = 'aktywna';
-            END
-                        
-            FETCH NEXT FROM dokument_cursor INTO @DokumentId, @Typ, @MagazynId;
-        END
-                
-        CLOSE dokument_cursor;
-        DEALLOCATE dokument_cursor;
-    END
+    -- Dokumenty, które zmieniły status na zatwierdzony
+-- CTE, które wyłapuje dokumenty zmieniające status na 'zatwierdzony'
+    WITH Zatwierdzone AS (
+        SELECT i.IdDokumentu, i.Typ, i.MagazynId
+        FROM inserted i
+        INNER JOIN deleted d ON i.IdDokumentu = d.IdDokumentu
+        WHERE i.Status = 'zatwierdzony' AND d.Status <> 'zatwierdzony'
+    )
+     -- PZ - dodajemy do magazynu
+   MERGE StanyMagazynowe AS target
+    USING (
+        SELECT i.MagazynId, p.MaterialId, p.Ilosc
+        FROM inserted i
+        INNER JOIN deleted d ON i.IdDokumentu = d.IdDokumentu
+        INNER JOIN PozycjeDokumentow p ON p.DokumentId = i.IdDokumentu
+        WHERE i.Status = 'zatwierdzony' AND d.Status <> 'zatwierdzony' AND i.Typ = 'PZ'
+    ) AS source (MagazynId, MaterialId, Ilosc)
+    ON target.MagazynId = source.MagazynId AND target.MaterialId = source.MaterialId
+    WHEN MATCHED THEN
+        UPDATE SET target.Ilosc = target.Ilosc + source.Ilosc
+    WHEN NOT MATCHED THEN
+        INSERT (MagazynId, MaterialId, Ilosc)
+        VALUES (source.MagazynId, source.MaterialId, source.Ilosc);
+
+
+    WITH Zatwierdzone AS (
+        SELECT i.IdDokumentu, i.Typ, i.MagazynId
+        FROM inserted i
+        INNER JOIN deleted d ON i.IdDokumentu = d.IdDokumentu
+        WHERE i.Status = 'zatwierdzony' AND d.Status <> 'zatwierdzony'
+    )
+        DELETE rm
+    FROM RezerwacjeMaterialow rm
+    INNER JOIN Zatwierdzone z ON rm.DokumentId = z.IdDokumentu
+    WHERE z.Typ = 'WZ';
+
 END
