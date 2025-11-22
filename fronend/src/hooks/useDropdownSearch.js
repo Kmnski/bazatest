@@ -9,7 +9,7 @@ export const useDropdownSearch = (fetchDataFunction, searchFunction = null) => {
   const [showResults, setShowResults] = useState(false);
   const initialDataRef = useRef([]);
 
-    // Funkcja do formatowania wyświetlanej wartości (możesz dostosować)
+    // Funkcja do formatowania wyświetlanej wartości
 const formatDisplayValue = (item) => {
   if (!item) return '';
   
@@ -40,7 +40,7 @@ const formatDisplayValue = (item) => {
       initialDataRef.current = allData;
     } catch (err) {
       setError('Błąd podczas pobierania danych');
-      console.error('❌ Błąd pobierania:', err);
+      
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ const formatDisplayValue = (item) => {
       
       setFilteredData(searchData);
     } catch (err) {
-      console.error('❌ Błąd wyszukiwania:', err);
+      
       setError('Błąd podczas wyszukiwania');
       setFilteredData(initialDataRef.current);
     } finally {
@@ -101,7 +101,7 @@ const formatDisplayValue = (item) => {
 
 const handleFocus = useCallback(() => {
   setShowResults(true);
-  // ZAWSZE pokazuj wszystkie dane przy focus, niezależnie od searchQuery
+  
   setFilteredData(initialDataRef.current);
 }, []);
 

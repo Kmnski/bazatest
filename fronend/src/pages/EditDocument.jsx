@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { documentsAPI, warehousesAPI, suppliersAPI, receiversAPI, materialsAPI } from '../api';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
-import './NewDocument.css';
+
 
 function EditDocument({ user, onLogout }) {
   const navigate = useNavigate();

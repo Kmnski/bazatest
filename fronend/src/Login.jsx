@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { authAPI } from './api';
-import './Login.css';
+
 
 function Login({ onLogin }) {
   const [formData, setFormData] = useState({
@@ -33,34 +33,32 @@ function Login({ onLogin }) {
     setError('');
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    try {
-      let response;
+  try {
+    if (isRegistering) {
       
-      if (isRegistering) {
-        // ✅ REJESTRACJA - zgodna z Twoim RegisterDto
-        response = await authAPI.register({
-          email: registerData.email,
-          haslo: registerData.haslo, // 🔧 Uwaga: "haslo" a nie "password"
-          imie: registerData.imie,
-          nazwisko: registerData.nazwisko
-        });
-      } else {
-        // ✅ LOGOWANIE - zgodne z Twoim LoginDto  
-        response = await authAPI.login({
-          email: formData.email,
-          haslo: formData.password // 🔧 Uwaga: "haslo" a nie "password"
-        });
-      }
-      // ✅ DODAJ TEN CONSOLE.LOG DO DEBUGOWANIA
-        console.log('Odpowiedź z backendu:', response.data);
+      await authAPI.register({
+        email: registerData.email,
+        haslo: registerData.haslo,
+        imie: registerData.imie,
+        nazwisko: registerData.nazwisko
+      });
 
+      
+      alert('Rejestracja zakończona sukcesem! Teraz możesz się zalogować.');
+      setIsRegistering(false);
+      setRegisterData({ imie: '', nazwisko: '', email: '', haslo: '' }); 
+    } else {
+      
+      const response = await authAPI.login({
+        email: formData.email,
+        haslo: formData.password
+      });
 
-      // ✅ ZAPISUJEMY DANE ZGODNIE Z TWOIM UserResponseDto
       const userData = response.data;
       localStorage.setItem('token', userData.token);
       localStorage.setItem('user', JSON.stringify({
@@ -71,20 +69,20 @@ function Login({ onLogin }) {
         rola: userData.rola
       }));
 
-      // ✅ PRZEKAZUJEMY DANE DO App.js
       onLogin(userData);
-      
-    } catch (error) {
-      console.error('Błąd:', error);
-      setError(
-        error.response?.data?.message || 
-        error.response?.data || 
-        'Wystąpił błąd. Spróbuj ponownie.'
-      );
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    console.error('Błąd:', error);
+    setError(
+      error.response?.data?.message ||
+      error.response?.data ||
+      'Wystąpił błąd. Spróbuj ponownie.'
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const toggleMode = () => {
     setIsRegistering(!isRegistering);
@@ -99,7 +97,7 @@ function Login({ onLogin }) {
           <p>{isRegistering ? 'Zarejestruj nowe konto' : 'Zaloguj się do swojego konta'}</p>
         </div>
 
-        {/* ✅ WYŚWIETLANIE BŁĘDÓW */}
+        
         {error && (
           <div className="error-message">
             {error}
@@ -107,15 +105,15 @@ function Login({ onLogin }) {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* ✅ FORMULARZ REJESTRACJI */}
+          {/* FORMULARZ REJESTRACJI */}
           {isRegistering && (
             <>
               <div className="form-group">
                 <label htmlFor="imie">Imię:</label>
-                <input 
-                  type="text" 
-                  id="imie" 
-                  name="imie" 
+                <input
+                  type="text"
+                  id="imie"
+                  name="imie"
                   placeholder="Jan"
                   value={registerData.imie}
                   onChange={handleChange}
@@ -125,10 +123,10 @@ function Login({ onLogin }) {
               </div>
               <div className="form-group">
                 <label htmlFor="nazwisko">Nazwisko:</label>
-                <input 
-                  type="text" 
-                  id="nazwisko" 
-                  name="nazwisko" 
+                <input
+                  type="text"
+                  id="nazwisko"
+                  name="nazwisko"
                   placeholder="Kowalski"
                   value={registerData.nazwisko}
                   onChange={handleChange}
@@ -139,14 +137,14 @@ function Login({ onLogin }) {
             </>
           )}
 
-          {/* ✅ WSPÓLNE POLA */}
+          {/* WSPÓLNE POLA */}
           <div className="form-group">
             <label htmlFor="email">Email:</label>
-            <input 
-              type="email" 
-              id="email" 
-              name="email" 
-              placeholder="admin@magazyn.pl" 
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="admin@magazyn.pl"
               value={isRegistering ? registerData.email : formData.email}
               onChange={handleChange}
               required 
@@ -157,19 +155,19 @@ function Login({ onLogin }) {
           <div className="form-group">
             <label htmlFor="password">Hasło:</label>
             <input 
-              type="password" 
-              id="password" 
-              name={isRegistering ? "haslo" : "password"} // 🔧 Różne name dla backendu
-              placeholder="••••••••" 
+              type="password"
+              id="password"
+              name={isRegistering ? "haslo" : "password"}
+              placeholder="••••••••"
               value={isRegistering ? registerData.haslo : formData.password}
               onChange={handleChange}
-              required 
+              required
               disabled={loading}
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="login-button"
             disabled={loading}
           >
@@ -185,19 +183,7 @@ function Login({ onLogin }) {
             </a>
           </p>
         </div>
-
-        {/* ✅ POKAZUJEMY KONTA TESTOWALE TYLKO PRZY LOGOWANIU */}
-        {!isRegistering && (
-          <div className="demo-accounts">
-            <h3>🔍 Konta testowe:</h3>
-            <div className="account">
-              <strong>Admin:</strong> admin@magazyn.pl / Admin123!
-            </div>
-            <div className="account">
-              <strong>Magazynier:</strong> magazynier@magazyn.pl / Magazyn123!
-            </div>
-          </div>
-        )}
+        
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 import React from 'react';
-import { suppliersAPI } from '../api'; // ✅ poprawione
-import Header from '../components/Header'; // ✅ poprawione
-import Navigation from '../components/Navigation'; // ✅ poprawione
-import SearchBar from '../components/SearchBar'; // ✅ poprawione
-import SupplierModal from '../components/modals/SupplierModal'; // ✅ poprawione
-import { useSupplierModal } from '../hooks/useSupplierModal'; // ✅ poprawione
-import { useSearch } from '../hooks/useSearch'; // ✅ poprawione
-import './Suppliers.css';
+import { suppliersAPI } from '../api';
+import Header from '../components/Header';
+import Navigation from '../components/Navigation';
+import SearchBar from '../components/SearchBar';
+import SupplierModal from '../components/modals/SupplierModal';
+import { useSupplierModal } from '../hooks/useSupplierModal';
+import { useSearch } from '../hooks/useSearch';
+
 
 function Suppliers({ user, onLogout }) {
   // Hook dla wyszukiwania dostawców
@@ -41,10 +41,9 @@ function Suppliers({ user, onLogout }) {
       }
       
       supplierModal.closeModal();
-      fetchDostawcy(); // Odśwież listę
+      fetchDostawcy();
     } catch (error) {
-      console.error('Błąd zapisywania dostawcy:', error);
-      alert('Błąd podczas zapisywania dostawcy: ' + (error.response?.data?.message || error.message));
+      
     }
   };
 
@@ -55,7 +54,7 @@ function Suppliers({ user, onLogout }) {
         
         fetchDostawcy();
       } catch (error) {
-        console.error('Błąd usuwania dostawcy:', error);
+        
         
       }
     }
@@ -88,12 +87,6 @@ function Suppliers({ user, onLogout }) {
           </button>
         </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-
         <SearchBar 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -119,13 +112,13 @@ function Suppliers({ user, onLogout }) {
                     <td>{supplier.telefon || '-'}</td>
                     <td>
                       <div className="suppliers-action-buttons">
-                        <button 
+                        <button
                           className="edit-btn" 
                           onClick={() => supplierModal.openEditModal(supplier)}
                         >
                           Edytuj
                         </button>
-                        <button 
+                        <button
                           className="delete-btn"
                           onClick={() => deleteSupplier(supplier.idDostawcy)}
                         >

@@ -6,7 +6,7 @@ import SearchBar from '../components/SearchBar';
 import ReceiverModal from '../components/modals/ReceiverModal';
 import { useReceiverModal } from '../hooks/useReceiverModal';
 import { useSearch } from '../hooks/useSearch';
-import './Suppliers.css'; 
+
 
 function Receivers({ user, onLogout }) {
   
@@ -18,14 +18,6 @@ function Receivers({ user, onLogout }) {
     error,
     refetch: fetchOdbiorcy
   } = useSearch(receiversAPI.getOdbiorcy);
-
-    // DEBUG - dodaj te logi
-  console.log('🔍 DEBUG Receivers:', {
-    odbiorcyCount: odbiorcy.length,
-    searchQuery: searchQuery,
-    loading: loading,
-    error: error
-  });
 
   // Hook dla modala
   const receiverModal = useReceiverModal();
@@ -49,9 +41,9 @@ function Receivers({ user, onLogout }) {
       }
       
       receiverModal.closeModal();
-      fetchOdbiorcy(); // Odśwież listę
+      fetchOdbiorcy();
     } catch (error) {
-      console.error('Błąd zapisywania odbiorcy:', error);
+      
       
     }
   };
@@ -63,7 +55,7 @@ function Receivers({ user, onLogout }) {
         
         fetchOdbiorcy();
       } catch (error) {
-        console.error('Błąd usuwania odbiorcy:', error);
+        
         
       }
     }
@@ -95,14 +87,7 @@ function Receivers({ user, onLogout }) {
             <span>+</span> Dodaj odbiorcę
           </button>
         </div>
-
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-
-        <SearchBar 
+        <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           placeholder="Szukaj odbiorców po nazwie, email lub adresie..."
@@ -131,12 +116,12 @@ function Receivers({ user, onLogout }) {
                     <td>
                       <div className="suppliers-action-buttons">
                         <button 
-                          className="edit-btn" 
+                          className="edit-btn"
                           onClick={() => receiverModal.openEditModal(receiver)}
                         >
                           Edytuj
                         </button>
-                        <button 
+                        <button
                           className="delete-btn"
                           onClick={() => deleteReceiver(receiver.idOdbiorcy)}
                         >

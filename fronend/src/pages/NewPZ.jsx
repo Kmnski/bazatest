@@ -46,8 +46,7 @@ function NewPZ({ user, onLogout }) {
       setMaterials(materialsResponse.data);
       setFilteredMaterials(materialsResponse.data);
     } catch (error) {
-      console.error('Błąd ładowania danych:', error);
-      alert('Błąd podczas ładowania danych');
+
     } finally {
       setInitialLoading(false);
     }
@@ -62,7 +61,7 @@ function NewPZ({ user, onLogout }) {
 
   // Filtrowanie materiałów - wyklucz już wybrane
   const getAvailableMaterials = (currentPositionIndex) => {
-    return materials.filter(material => 
+    return materials.filter(material =>
       !isMaterialAlreadyUsed(material.idMaterialu, currentPositionIndex)
     );
   };
@@ -106,7 +105,6 @@ function NewPZ({ user, onLogout }) {
   };
 
   const selectMaterial = (material, positionIndex) => {
-    // Sprawdź czy materiał nie jest już użyty
     if (isMaterialAlreadyUsed(material.idMaterialu, positionIndex)) {
       alert('Ten materiał został już wybrany w innej pozycji!');
       return;
@@ -122,9 +120,9 @@ function NewPZ({ user, onLogout }) {
     };
     
     setFormData(prev => ({ ...prev, pozycje: updatedPozycje }));
-    setMaterialSearch(prev => ({ 
-      ...prev, 
-      [positionIndex]: `${material.nazwa} (${material.jednostka})` 
+    setMaterialSearch(prev => ({
+      ...prev,
+      [positionIndex]: `${material.nazwa} (${material.jednostka})`
     }));
     setShowMaterialResults(prev => ({ ...prev, [positionIndex]: false }));
   };
@@ -133,10 +131,10 @@ function NewPZ({ user, onLogout }) {
   const addPosition = () => {
     setFormData(prev => ({
       ...prev,
-      pozycje: [...prev.pozycje, { 
-        materialId: '', 
-        ilosc: '', 
-        materialNazwa: '', 
+      pozycje: [...prev.pozycje, {
+        materialId: '',
+        ilosc: '',
+        materialNazwa: '',
         materialJednostka: ''
       }]
     }));
@@ -166,10 +164,9 @@ function NewPZ({ user, onLogout }) {
       const response = await suppliersAPI.createSupplier(supplierModal.formData);
       supplierSearch.refetch();
       supplierModal.closeModal();
-      alert('Dostawca został dodany!');
+      
     } catch (error) {
-      console.error('Błąd dodawania dostawcy:', error);
-      alert('Błąd podczas dodawania dostawcy');
+      
     }
   };
 
@@ -181,10 +178,9 @@ function NewPZ({ user, onLogout }) {
       setMaterials(materialsResponse.data);
       setFilteredMaterials(materialsResponse.data);
       materialModal.closeModal();
-      alert('Materiał został dodany!');
+      
     } catch (error) {
-      console.error('Błąd dodawania materiału:', error);
-      alert('Błąd podczas dodawania materiału');
+      
     }
   };
 
@@ -227,7 +223,7 @@ function NewPZ({ user, onLogout }) {
         return;
       }
 
-      // Walidacja unikalności materiałów
+      
       const materialIds = formData.pozycje.map(p => p.materialId);
       const uniqueMaterialIds = [...new Set(materialIds)];
       if (materialIds.length !== uniqueMaterialIds.length) {
@@ -247,13 +243,11 @@ function NewPZ({ user, onLogout }) {
         }))
       };
 
-      const response = await documentsAPI.createDokument(documentData);
-      alert('Dokument PZ został utworzony pomyślnie!');
+      await documentsAPI.createDokument(documentData);
       navigate('/documents');
       
     } catch (error) {
-      console.error('❌ Błąd tworzenia dokumentu PZ:', error);
-      alert('Błąd podczas tworzenia dokumentu: ' + (error.response?.data?.message || error.message));
+      
     } finally {
       setLoading(false);
     }

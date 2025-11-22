@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { dashboardAPI } from '../api';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
@@ -31,12 +30,10 @@ function Dashboard({ onLogout, user }) {
         if (aktywnoscResponse.data && Array.isArray(aktywnoscResponse.data)) {
           setOstatniaAktywnosc(aktywnoscResponse.data);
         } else {
-          console.warn('Nieprawidłowy format danych aktywności:', aktywnoscResponse.data);
           setOstatniaAktywnosc([]);
         }
         
       } catch (error) {
-        console.error('Błąd pobierania danych:', error);
         setStatystyki({
           liczbaMaterialow: 0,
           dzisiejszeDokumenty: 0,
@@ -62,7 +59,7 @@ function Dashboard({ onLogout, user }) {
       }
       
       const teraz = new Date();
-      const roznica = teraz - data; // różnica w ms
+      const roznica = teraz - data;
 
       const dni = Math.floor(roznica / (1000 * 60 * 60 * 24));
 
@@ -72,7 +69,6 @@ function Dashboard({ onLogout, user }) {
       if (dni < 30) return `${Math.floor(dni / 7)} tyg. temu`;
       return `${Math.floor(dni / 30)} mies. temu`;
     } catch (error) {
-      console.error('Błąd formatowania daty:', error, dataString);
       return 'błąd daty';
     }
   };

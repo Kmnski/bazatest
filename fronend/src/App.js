@@ -11,7 +11,7 @@ import NewPZ from './pages/NewPZ';
 import NewWZ from './pages/NewWZ';
 import Documents from './pages/Documents';
 import DocumentView from './pages/DocumentView';
-import NewDocument from './pages/NewDocument';
+
 import AdminPanel from './pages/AdminPanel';
 import ApprovalPanel from './pages/ApprovalPanel';
 import UserManagement from './pages/UsersManagement';
@@ -81,7 +81,6 @@ function App() {
           <Route path="/suppliers" element={<Suppliers onLogout={handleLogout} user={user} />}/>
           <Route path="/receivers" element={<Receivers onLogout={handleLogout} user={user} />}/>
           <Route path="/documents" element={<Documents user={user} onLogout={handleLogout} />} />
-          <Route path="/document-create" element={<NewDocument user={user} onLogout={handleLogout} />} />
           <Route path="/document-view/:id" element={<DocumentView user={user} onLogout={handleLogout} />} />
           <Route path="/admin" element={<AdminPanel user={user} onLogout={handleLogout} />} />
           <Route path="/approval-panel" element={<ApprovalPanel user={user} onLogout={handleLogout} />} />

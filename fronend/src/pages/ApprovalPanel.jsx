@@ -19,7 +19,7 @@ const ApprovalPanel = () => {
             setPendingDocuments(response.data || []);
             
         } catch (err) {
-            console.error('Błąd pobierania dokumentów:', err);
+            
             setError('Nie udało się załadować dokumentów oczekujących');
             setPendingDocuments([]);
         } finally {
@@ -37,7 +37,7 @@ const ApprovalPanel = () => {
                 fetchPendingDocuments();
             }
         } catch (err) {
-            console.error('Błąd zatwierdzania dokumentu:', err);
+            
             
         } finally {
             setActionLoading(null);
@@ -54,7 +54,7 @@ const ApprovalPanel = () => {
                 fetchPendingDocuments();
             }
         } catch (err) {
-            console.error('Błąd odrzucania dokumentu:', err);
+            
             
         } finally {
             setActionLoading(null);
@@ -66,7 +66,7 @@ const ApprovalPanel = () => {
             try {
                 await authAPI.logout();
             } catch (err) {
-                console.error('Błąd podczas wylogowywania:', err);
+                
             } finally {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');

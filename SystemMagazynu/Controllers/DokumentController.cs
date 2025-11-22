@@ -332,37 +332,26 @@ public class DokumentController : ControllerBase
                 }
 
                 // Walidacja kontrahenta
-                if ((dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW") && (dokumentDto.DostawcaId == null || dokumentDto.DostawcaId == 0))
+                if ((dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW") && !dokumentDto.DostawcaId.HasValue)
                 {
                     result = BadRequest("Dostawca jest wymagany dla dokumentów przyjêcia");
                     return;
                 }
-                if ((dokumentDto.Typ == "WZ" || dokumentDto.Typ == "RW") && (dokumentDto.OdbiorcaId == null || dokumentDto.OdbiorcaId == 0))
+                if ((dokumentDto.Typ == "WZ" || dokumentDto.Typ == "RW") && !dokumentDto.OdbiorcaId.HasValue)
                 {
                     result = BadRequest("Odbiorca jest wymagany dla dokumentów wydania");
                     return;
                 }
 
                 // Walidacja magazynu
-                Magazyn? magazyn = await _context.Magazyny.FindAsync(new object[] { dokumentDto.MagazynId }, cancellationToken);
+                var magazyn = await _context.Magazyny.FindAsync(new object[] { dokumentDto.MagazynId }, cancellationToken);
                 if (magazyn == null) { result = BadRequest("Magazyn nie istnieje"); return; }
-
-                if (dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW")
-                {
-                    Dostawca? dostawca = await _context.Dostawcy.FindAsync(new object[] { dokumentDto.DostawcaId }, cancellationToken);
-                    if (dostawca == null) { result = BadRequest("Dostawca nie istnieje"); return; }
-                }
-                else
-                {
-                    Odbiorca? odbiorca = await _context.Odbiorcy.FindAsync(new object[] { dokumentDto.OdbiorcaId }, cancellationToken);
-                    if (odbiorca == null) { result = BadRequest("Odbiorca nie istnieje"); return; }
-                }
 
                 // Walidacja materia³ów
                 foreach (var pozycja in dokumentDto.Pozycje)
                 {
                     var material = await _context.Materialy.FindAsync(new object[] { pozycja.MaterialId }, cancellationToken);
-                    if (material == null) { result = BadRequest($"Material o ID {pozycja.MaterialId} nie istnieje"); return; }
+                    if (material == null) { result = BadRequest($"Materia³ o ID {pozycja.MaterialId} nie istnieje"); return; }
 
                     if (dokumentDto.Typ == "WZ")
                     {
@@ -385,17 +374,18 @@ public class DokumentController : ControllerBase
                 // Generowanie nowego numeru dokumentu
                 var numerDokumentu = await GenerujNumerDokumentuAsync(dokumentDto.Typ, dokumentDto.Data, cancellationToken);
 
-                // Aktualizacja dokumentu za pomoc¹ natywnego SQL
+                // Aktualizacja dokumentu z obs³ug¹ nullable
                 await _context.Database.ExecuteSqlRawAsync(
                     "UPDATE Dokumenty SET Typ = {0}, Data = {1}, MagazynId = {2}, DostawcaId = {3}, OdbiorcaId = {4}, Status = {5}, NumerDokumentu = {6} WHERE IdDokumentu = {7}",
                     dokumentDto.Typ,
                     dokumentDto.Data,
                     dokumentDto.MagazynId,
-                    dokumentDto.DostawcaId ?? 0,
-                    dokumentDto.OdbiorcaId ?? 0,
+                    dokumentDto.DostawcaId.HasValue ? dokumentDto.DostawcaId.Value : null,
+                    dokumentDto.OdbiorcaId.HasValue ? dokumentDto.OdbiorcaId.Value : null,
                     "oczekujacy",
                     numerDokumentu,
-                    dokument.IdDokumentu);
+                    dokument.IdDokumentu
+                );
 
                 // Usuñ stare pozycje dokumentu
                 if (dokument.Pozycje.Any())
@@ -415,7 +405,6 @@ public class DokumentController : ControllerBase
                         p.MaterialId);
                 }
 
-                // Zaloguj operacjê
                 await LoggerService.ZapiszOperacjeAsync(_context, nameof(DokumentController), nameof(PutDokument),
                     $"Zaktualizowano dokument {dokumentDto.Typ}/{numerDokumentu} (ID: {dokument.IdDokumentu})");
 
@@ -425,13 +414,14 @@ public class DokumentController : ControllerBase
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                await LoggerService.ZapiszBladBezOutputAsync(_context, nameof(DokumentController), nameof(PutDokument), ex);
-                result = StatusCode(500, "B³¹d serwera podczas aktualizacji dokumentu.");
+                await LoggerService.ZapiszB³adAsync(_context, nameof(DokumentController), nameof(PutDokument), ex);
+                result = StatusCode(500, $"B³¹d podczas aktualizacji dokumentu: {ex.Message} {ex.InnerException?.Message}");
             }
         });
 
         return result;
     }
+
 
 
 

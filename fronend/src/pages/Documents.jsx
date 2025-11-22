@@ -5,7 +5,7 @@ import { documentsAPI } from '../api';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
 import SearchBar from '../components/SearchBar';
-import './Documents.css';
+
 
 function Documents({ user, onLogout }) {
   const [dokumenty, setDokumenty] = useState([]);
@@ -35,11 +35,9 @@ function Documents({ user, onLogout }) {
     setLoading(true);
     try {
       const response = await documentsAPI.getDokumenty();
-      console.log('📋 Pobrane dokumenty:', response.data); // DEBUG
       setDokumenty(response.data);
     } catch (error) {
-      console.error('Błąd pobierania dokumentów:', error);
-      alert('Błąd podczas pobierania dokumentów');
+      
     } finally {
       setLoading(false);
     }
@@ -50,7 +48,7 @@ function Documents({ user, onLogout }) {
       const response = await documentsAPI.searchDokumenty(searchQuery.trim());
       setDokumenty(response.data);
     } catch (error) {
-      console.error('Błąd wyszukiwania:', error);
+      
       fetchDokumenty();
     }
   };
@@ -62,7 +60,7 @@ function Documents({ user, onLogout }) {
         
         fetchDokumenty();
       } catch (error) {
-        console.error('Błąd usuwania dokumentu:', error);
+        
         
       }
     }
@@ -70,33 +68,23 @@ function Documents({ user, onLogout }) {
 
   // Funkcja do określenia nazwy kontrahenta
   const getKontrahentNazwa = (dokument) => {
-    if (dokument.typ === 'PZ' || dokument.typ === 'PW') {
-      return dokument.dostawcaNazwa || 'Brak dostawcy';
+    if (dokument.typ === 'PZ') {
+      return dokument.dostawcaNazwa;
     } else {
-      return dokument.odbiorcaNazwa || 'Brak odbiorcy';
+      return dokument.odbiorcaNazwa;
     }
-  };
-
-  // Funkcja bezpiecznego dostępu do statusu
-  const getStatus = (dokument) => {
-    return dokument.status || 'oczekujacy';
-  };
-
-  // Funkcja bezpiecznego dostępu do typu
-  const getTyp = (dokument) => {
-    return dokument.typ || 'PZ';
   };
 
   // Funkcja renderująca przyciski akcji w zależności od statusu
   const renderActionButtons = (dokument) => {
-    const status = getStatus(dokument).toLowerCase();
+    const status = dokument.status.toLowerCase();
     const documentId = dokument.idDokumentu;
 
     switch (status) {
       case 'zatwierdzony':
         return (
           <div className="action-buttons-centered">
-            <Link 
+            <Link
               to={`/document-view/${documentId}`} 
               className="view-btn"
             >
@@ -108,20 +96,20 @@ function Documents({ user, onLogout }) {
       case 'odrzucony':
         return (
           <div className="action-buttons-centered">
-            <Link 
+            <Link
               to={`/document-view/${documentId}`} 
               className="view-btn"
             >
               Podgląd
             </Link>
-            <Link 
+            <Link
               to={`/document-edit/${documentId}`} 
-              className="edit-btn"
+              className="document-edit-btn"
             >
               Edytuj
             </Link>
-            <button 
-              className="delete-btn" 
+            <button
+              className="delete-btn"
               onClick={() => deleteDocument(documentId)}
             >
               Usuń
@@ -133,8 +121,8 @@ function Documents({ user, onLogout }) {
       default:
         return (
           <div className="action-buttons-centered">
-            <Link 
-              to={`/document-view/${documentId}`} 
+            <Link
+              to={`/document-view/${documentId}`}
               className="view-btn"
             >
               Podgląd
@@ -157,7 +145,6 @@ function Documents({ user, onLogout }) {
       </div>
     );
   }
-
   return (
     <div className="documents">
       <Header user={user} onLogout={onLogout} />
@@ -177,14 +164,12 @@ function Documents({ user, onLogout }) {
 
         </div>
 
-        {/* Wyszukiwarka */}
         <SearchBar 
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           placeholder="Szukaj dokumentów..."
         />
-
-        {/* Tabela dokumentów */}
+        
         <div className="s-table">
           <table>
             <thead>
@@ -202,19 +187,19 @@ function Documents({ user, onLogout }) {
             <tbody>
               {dokumenty.length > 0 ? (
                 dokumenty.map((dokument) => {
-                  const status = getStatus(dokument);
-                  const typ = getTyp(dokument);
+                  const status = dokument.status;
+                  const typ = dokument.typ;
                   
                   return (
                     <tr key={dokument.idDokumentu}>
-                      <td><strong>{dokument.numerDokumentu || 'Brak numeru'}</strong></td>
+                      <td><strong>{dokument.numerDokumentu}</strong></td>
                       <td>
                         <span className={`document-type type-${typ.toLowerCase()}`}>
                           {typ}
                         </span>
                       </td>
-                      <td>{dokument.data ? new Date(dokument.data).toLocaleDateString() : 'Brak daty'}</td>
-                      <td>{dokument.magazynLokalizacja || 'Brak danych'}</td>
+                      <td>{new Date(dokument.data).toLocaleDateString()}</td>
+                      <td>{dokument.magazynLokalizacja}</td>
                       <td>{getKontrahentNazwa(dokument)}</td>
                       <td>{dokument.liczbaPozycji || 0} pozycje</td>
                       <td>

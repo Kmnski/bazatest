@@ -53,8 +53,7 @@ function NewWZ({ user, onLogout }) {
       const materialsResponse = await materialsAPI.getMaterialy();
       setMaterials(materialsResponse.data);
     } catch (error) {
-      console.error('Błąd ładowania danych:', error);
-      alert('Błąd podczas ładowania danych');
+      
     } finally {
       setInitialLoading(false);
     }
@@ -66,8 +65,7 @@ function NewWZ({ user, onLogout }) {
       setWarehouseMaterials(response.data);
       setFilteredMaterials(response.data);
     } catch (error) {
-      console.error('Błąd ładowania materiałów magazynu:', error);
-      alert('Błąd podczas ładowania materiałów z magazynu');
+      
     }
   };
 
@@ -88,8 +86,8 @@ function NewWZ({ user, onLogout }) {
   // Wybór magazynu
   const selectWarehouse = (warehouse) => {
     warehouseSearch.handleSelect(warehouse);
-    setFormData(prev => ({ 
-      ...prev, 
+    setFormData(prev => ({
+      ...prev,
       magazynId: warehouse.idMagazynu,
       pozycje: []
     }));
@@ -142,8 +140,8 @@ function NewWZ({ user, onLogout }) {
     };
     
     setFormData(prev => ({ ...prev, pozycje: updatedPozycje }));
-    setMaterialSearch(prev => ({ 
-      ...prev, 
+    setMaterialSearch(prev => ({
+      ...prev,
       [positionIndex]: `${material.nazwa} (${material.jednostka}) - dostępne: ${maxIlosc}` 
     }));
     setShowMaterialResults(prev => ({ ...prev, [positionIndex]: false }));
@@ -153,10 +151,10 @@ function NewWZ({ user, onLogout }) {
   const addPosition = () => {
     setFormData(prev => ({
       ...prev,
-      pozycje: [...prev.pozycje, { 
-        materialId: '', 
-        ilosc: '', 
-        materialNazwa: '', 
+      pozycje: [...prev.pozycje, {
+        materialId: '',
+        ilosc: '',
+        materialNazwa: '',
         materialJednostka: '',
         maxIlosc: null
       }]
@@ -182,7 +180,7 @@ function NewWZ({ user, onLogout }) {
       const ilosc = parseFloat(value) || 0;
       const maxIlosc = parseFloat(updatedPozycje[index].maxIlosc);
       if (ilosc > maxIlosc) {
-        alert(`Nie można wydać więcej niż dostępna ilość: ${maxIlosc}`);
+        
         updatedPozycje[index].ilosc = maxIlosc.toString();
       }
     }
@@ -194,13 +192,12 @@ function NewWZ({ user, onLogout }) {
   const handleAddReceiver = async (e) => {
     e.preventDefault();
     try {
-      const response = await receiversAPI.createReceiver(receiverModal.formData);
+      await receiversAPI.createReceiver(receiverModal.formData);
       receiverSearch.refetch();
       receiverModal.closeModal();
-      alert('Odbiorca został dodany!');
+      
     } catch (error) {
-      console.error('Błąd dodawania odbiorcy:', error);
-      alert('Błąd podczas dodawania odbiorcy');
+      
     }
   };
 
@@ -251,14 +248,7 @@ function NewWZ({ user, onLogout }) {
         return;
       }
 
-      // Walidacja dostępności materiałów
-      for (const pozycja of formData.pozycje) {
-        const material = warehouseMaterials.find(m => m.idMaterialu === parseInt(pozycja.materialId));
-        if (material && (parseFloat(pozycja.ilosc) > parseFloat(material.stanMagazynowy))) {
-          alert(`Nie można wydać więcej niż dostępna ilość materiału: ${material.nazwa}. Dostępne: ${material.stanMagazynowy}`);
-          return;
-        }
-      }
+
 
       const documentData = {
         typ: 'WZ',
@@ -272,13 +262,12 @@ function NewWZ({ user, onLogout }) {
         }))
       };
 
-      const response = await documentsAPI.createDokument(documentData);
-      alert('Dokument WZ został utworzony pomyślnie!');
+      await documentsAPI.createDokument(documentData);
+      
       navigate('/documents');
       
     } catch (error) {
-      console.error('❌ Błąd tworzenia dokumentu WZ:', error);
-      alert('Błąd podczas tworzenia dokumentu: ' + (error.response?.data?.message || error.message));
+      
     } finally {
       setLoading(false);
     }
@@ -409,9 +398,9 @@ function NewWZ({ user, onLogout }) {
                   </div>
                 )}
               </div>
-              <button 
-                type="button" 
-                className="add-new-btn" 
+              <button
+                type="button"
+                className="add-new-btn"
                 onClick={receiverModal.openAddModal}
               >
                 + Dodaj nowego odbiorcę
@@ -428,9 +417,9 @@ function NewWZ({ user, onLogout }) {
                 <div key={index} className="position-item">
                   <div className="position-header">
                     <div className="position-material">Pozycja #{index + 1}</div>
-                    <button 
-                      type="button" 
-                      className="remove-position" 
+                    <button
+                      type="button"
+                      className="remove-position"
                       onClick={() => removePosition(index)}
                     >
                       🗑️ Usuń
@@ -440,8 +429,8 @@ function NewWZ({ user, onLogout }) {
                     <div className="form-group">
                       <label>Materiał:</label>
                       <div className="search-container">
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           placeholder="Wyszukaj materiał..."
                           value={materialSearch[index] || ''}
                           onChange={(e) => searchMaterials(e.target.value, index)}
@@ -456,20 +445,18 @@ function NewWZ({ user, onLogout }) {
                             {filteredMaterials.map(material => {
                               const isUsed = isMaterialAlreadyUsed(material.idMaterialu, index);
                               return (
-                                <div 
+                                <div
                                   key={material.idMaterialu}
                                   className={`search-result ${isUsed ? 'disabled' : ''}`}
                                   onClick={() => !isUsed && selectMaterial(material, index)}
-                                  style={isUsed ? { 
-                                    opacity: 0.5, 
+                                  style={isUsed ? {
+                                    opacity: 0.5,
                                     cursor: 'not-allowed',
                                     backgroundColor: '#f5f5f5'
                                   } : {}}
                                 >
                                   {material.nazwa} ({material.jednostka})
-                                  <span style={{float: 'right', color: isUsed ? '#ff4444' : '#666', fontSize: isUsed ? '12px' : 'inherit'}}>
-                                    {isUsed ? 'już wybrany' : `dostępne: ${material.stanMagazynowy}`}
-                                  </span>
+                                  
                                 </div>
                               );
                             })}

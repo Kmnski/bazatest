@@ -40,7 +40,6 @@ export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (userData) => api.post('/auth/register', userData),
   logout: () => api.post('/auth/logout'),
-  //getMe: () => api.get('/auth/me'),
   getAllUsers: () => api.get('/auth/AllUsers'),
   dodajRole: (data) => api.post('/auth/DodajRole', data),
 };
@@ -57,7 +56,6 @@ export const dashboardAPI = {
 
 export const suppliersAPI = {
   getDostawcy: () => api.get('/Dostawca'),
-  //getSupplier: (id) => api.get(`/Dostawca/${id}`),
   createSupplier: (supplierData) => api.post('/Dostawca', supplierData),
   updateSupplier: (id, supplierData) => api.put(`/Dostawca/${id}`, supplierData),
   deleteSupplier: (id) => api.delete(`/Dostawca/${id}`),
@@ -67,7 +65,6 @@ export const suppliersAPI = {
 
 export const receiversAPI = {
   getOdbiorcy: () => api.get('/Odbiorca'),
-  //getReceiver: (id) => api.get(`/Odbiorca/${id}`),
   createReceiver: (receiverData) => api.post('/Odbiorca', receiverData),
   updateReceiver: (id, receiverData) => api.put(`/Odbiorca/${id}`, receiverData),
   deleteReceiver: (id) => api.delete(`/Odbiorca/${id}`),
@@ -76,7 +73,6 @@ export const receiversAPI = {
 
 export const warehousesAPI = {
   getMagazyny: () => api.get('/Magazyn'),
-  //getWarehouse: (id) => api.get(`/Magazyn/${id}`),
   getWarehouseMaterials: (id) => api.get(`/Magazyn/${id}/materials`)
 };
 

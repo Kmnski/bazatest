@@ -20,15 +20,11 @@ function DocumentView({ user, onLogout }) {
     try {
       setLoading(true);
       const response = await documentsAPI.getDokument(id);
-      console.log('📄 Pełna odpowiedź API:', response);
-      console.log('📄 Dane dokumentu:', response.data);
       setDokument(response.data);
-
-      // POBIERZ POZYCJE DOKUMENTU
       await fetchPozycjeDokumentu(id);
       
     } catch (error) {
-      console.error('Błąd pobierania dokumentu:', error);
+      
       
     } finally {
       setLoading(false);
@@ -38,11 +34,11 @@ function DocumentView({ user, onLogout }) {
   const fetchPozycjeDokumentu = async (dokumentId) => {
     try {
       const response = await documentsAPI.getPozycjeDokumentu(dokumentId);
-      console.log('📦 Pozycje dokumentu:', response.data);
+      
       setPozycje(response.data);
     } catch (error) {
-      console.error('Błąd pobierania pozycji:', error);
-      // Jeśli endpoint nie istnieje, użyj pozycji z dokumentu (jeśli są)
+      
+      
       if (dokument && dokument.pozycje) {
         setPozycje(dokument.pozycje);
       }
@@ -79,13 +75,13 @@ function DocumentView({ user, onLogout }) {
     const getKontrahentData = () => {
     if (!dokument) return { nazwa: '' };
     
-    if (dokument.typ === 'PZ' || dokument.typ === 'PW') {
+    if (dokument.typ === 'PZ') {
       return {
-        nazwa: dokument.dostawcaNazwa || 'Brak danych'
+        nazwa: dokument.dostawcaNazwa
       };
     } else {
       return {
-        nazwa: dokument.odbiorcaNazwa || 'Brak danych'
+        nazwa: dokument.odbiorcaNazwa
       };
     }
   };
@@ -148,7 +144,7 @@ function DocumentView({ user, onLogout }) {
                   <strong>{dokument.numerDokumentu}</strong>
                 </h2>
                 <p>
-                  Data: <strong>{new Date(dokument.data).toLocaleDateString()}</strong> | 
+                  Data: <strong>{new Date(dokument.data).toLocaleDateString()}</strong> |
                   Utworzył: <strong>{dokument.uzytkownikEmail || user?.email || 'Administrator'}</strong>
                 </p>
               </div>
@@ -198,7 +194,7 @@ function DocumentView({ user, onLogout }) {
                           <td>
                             <strong>{material.nazwa}</strong>
                             <br />
-                            <small>{material.opis}</small>
+                            
                           </td>
                           <td>{material.jednostka}</td>
                           <td>{material.ilosc}</td>

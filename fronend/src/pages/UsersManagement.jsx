@@ -20,12 +20,12 @@ const UsersManagement = () => {
             const response = await authAPI.getAllUsers();
             const usersData = response.data || [];
             
-            console.log('Otrzymani użytkownicy:', usersData);
+            
             
             setUsers(usersData);
             
         } catch (err) {
-            console.error('Błąd pobierania użytkowników:', err);
+            
             setError('Nie udało się załadować listy użytkowników');
             setUsers([]);
         } finally {
@@ -44,11 +44,11 @@ const UsersManagement = () => {
             Rola: roleValue
         };
 
-        console.log('Wysyłane dane:', requestData);
+        
         await authAPI.dodajRole(requestData);
         fetchUsers();
     } catch (err) {
-        console.error('Błąd zmiany roli użytkownika:', err);
+        
     } finally {
         setActionLoading(null);
     }
@@ -62,7 +62,7 @@ const UsersManagement = () => {
             try {
                 await authAPI.logout();
             } catch (err) {
-                console.error('Błąd podczas wylogowywania:', err);
+                
             } finally {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');

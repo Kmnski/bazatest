@@ -15,11 +15,11 @@ export const useSearch = (fetchAllFunction, searchFunction = null) => {
       const response = await fetchAllFunction();
       const allData = response.data;
       setData(allData);
-      initialDataRef.current = allData; // Zapisz dane do filtrowania
-      console.log('📊 Pobrano wszystkie dane:', allData.length);
+      initialDataRef.current = allData;
+      
     } catch (err) {
       setError('Błąd podczas pobierania danych');
-      console.error('❌ Błąd pobierania:', err);
+      
     } finally {
       setLoading(false);
     }
@@ -30,11 +30,11 @@ export const useSearch = (fetchAllFunction, searchFunction = null) => {
     if (!query.trim()) {
       // Puste zapytanie - pokaż wszystkie dane
       setData(initialDataRef.current);
-      console.log('📋 Puste zapytanie - pokazuję wszystkie dane:', initialDataRef.current.length);
+      
       return;
     }
 
-    console.log('🔍 Filtruję lokalnie:', query);
+    
     
     const filteredData = initialDataRef.current.filter(item =>
       Object.values(item).some(value =>
@@ -43,7 +43,7 @@ export const useSearch = (fetchAllFunction, searchFunction = null) => {
     );
     
     setData(filteredData);
-    console.log('✅ Znaleziono:', filteredData.length, 'wyników');
+    
   }, []);
 
   // Wyszukiwanie przez backend
@@ -54,15 +54,15 @@ export const useSearch = (fetchAllFunction, searchFunction = null) => {
       return;
     }
 
-    console.log('🔍 Wyszukiwanie przez backend:', query);
+    
     setLoading(true);
 
     try {
       const response = await searchFunction(query);
       setData(response.data);
-      console.log('✅ Backend znalazł:', response.data.length, 'wyników');
+      
     } catch (err) {
-      console.error('❌ Błąd wyszukiwania:', err);
+      
       setError('Błąd podczas wyszukiwania');
       // Przy błędzie wróć do wszystkich danych
       setData(initialDataRef.current);
