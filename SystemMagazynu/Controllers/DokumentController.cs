@@ -309,7 +309,7 @@ public class DokumentController : ControllerBase
 
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Magazynier")]
     public async Task<IActionResult> PutDokument(int id, DokumentUpdateDto dokumentDto, CancellationToken cancellationToken = default)
     {
         var strategy = _context.Database.CreateExecutionStrategy();
@@ -428,7 +428,7 @@ public class DokumentController : ControllerBase
 
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Magazynier")]
     public async Task<IActionResult> DeleteDokument(int id)
     {
         var strategy = _context.Database.CreateExecutionStrategy();

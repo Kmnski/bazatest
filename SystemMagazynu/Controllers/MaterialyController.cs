@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SystemMagazynu.Data;
 using SystemMagazynu.Models;
 using Microsoft.AspNetCore.Authorization;
+using SystemMagazynu.Services;
 
 namespace SystemMagazynu.Controllers;
 
@@ -46,10 +47,39 @@ public class MaterialyController : ControllerBase
     [Authorize(Roles = "Admin,Magazynier")]
     public async Task<ActionResult<Material>> PostMaterial(Material material)
     {
-        _context.Materialy.Add(material);
-        await _context.SaveChangesAsync();
+        // 1. WALIDACJA
+        if (string.IsNullOrWhiteSpace(material.Nazwa))
+            return BadRequest("Nazwa materia³u jest wymagana");
 
-        return CreatedAtAction(nameof(GetMaterial), new { id = material.IdMaterialu }, material);
+        if (string.IsNullOrWhiteSpace(material.Jednostka))
+            return BadRequest("Jednostka materia³u jest wymagana");
+
+        try
+        {
+            // 2. ZAPIS
+            _context.Materialy.Add(material);
+            await _context.SaveChangesAsync();
+
+            // 3. LOG
+            await LoggerService.ZapiszOperacjeAsync(_context,
+                nameof(MaterialyController),
+                nameof(PostMaterial),
+                $"Dodano materia³ {material.Nazwa} (ID: {material.IdMaterialu})");
+
+            return CreatedAtAction(nameof(GetMaterial),
+                new { id = material.IdMaterialu }, material);
+        }
+        catch (Exception ex)
+        {
+            // 4. LOGOWANIE B£ÊDU
+            await LoggerService.ZapiszB³adAsync(_context,
+                nameof(MaterialyController),
+                nameof(PostMaterial),
+                ex);
+
+            return StatusCode(500, "B³¹d serwera podczas dodawania materia³u.");
+        }
     }
+
 
 }

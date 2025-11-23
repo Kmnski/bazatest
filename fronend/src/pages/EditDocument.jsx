@@ -79,8 +79,7 @@ function EditDocument({ user, onLogout }) {
       fillFormWithDocumentData(document, warehousesResponse.data, suppliersResponse.data, receiversResponse.data, materialsResponse.data);
 
     } catch (error) {
-      console.error('Błąd ładowania danych dokumentu:', error);
-      alert('Błąd podczas ładowania danych dokumentu');
+      
     } finally {
       setInitialLoading(false);
     }
@@ -154,8 +153,7 @@ function EditDocument({ user, onLogout }) {
       const response = await warehousesAPI.getWarehouseMaterials(formData.magazynId);
       setWarehouseMaterials(response.data);
     } catch (error) {
-      console.error('Błąd ładowania materiałów magazynu:', error);
-      alert('Błąd podczas ładowania materiałów z magazynu');
+      
     }
   };
 
@@ -336,7 +334,7 @@ function EditDocument({ user, onLogout }) {
       const ilosc = parseFloat(value) || 0;
       const maxIlosc = parseFloat(updatedPozycje[index].maxIlosc);
       if (ilosc > maxIlosc) {
-        alert(`Nie można wydać więcej niż dostępna ilość: ${maxIlosc}`);
+        
         updatedPozycje[index].ilosc = maxIlosc.toString();
       }
     }
@@ -395,7 +393,7 @@ function EditDocument({ user, onLogout }) {
         for (const pozycja of formData.pozycje) {
           const material = warehouseMaterials.find(m => m.idMaterialu === parseInt(pozycja.materialId));
           if (material && (parseFloat(pozycja.ilosc) > parseFloat(material.stanMagazynowy))) {
-            alert(`Nie można wydać więcej niż dostępna ilość materiału: ${material.nazwa}. Dostępne: ${material.stanMagazynowy}`);
+            
             return;
           }
         }
@@ -427,12 +425,11 @@ function EditDocument({ user, onLogout }) {
 
       // Użyj metody update zamiast create
       const response = await documentsAPI.updateDokument(id, documentData);
-      alert('Dokument został zaktualizowany pomyślnie!');
+      
       navigate('/documents');
       
     } catch (error) {
-      console.error('❌ Błąd aktualizacji dokumentu:', error);
-      alert('Błąd podczas aktualizacji dokumentu: ' + (error.response?.data?.message || error.message));
+      
     } finally {
       setLoading(false);
     }

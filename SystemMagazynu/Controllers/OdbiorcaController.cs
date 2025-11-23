@@ -19,7 +19,7 @@ public class OdbiorcaController : ControllerBase
         _context = context;
     }
 
-    // GET: api/Odbiorca - zwraca tylko aktywnych odbiorców
+    // GET: api/Odbiorca 
     [HttpGet]
     [Authorize(Roles = "Admin,Magazynier")]
     public async Task<ActionResult<IEnumerable<Odbiorca>>> GetOdbiorcy()
@@ -29,7 +29,7 @@ public class OdbiorcaController : ControllerBase
             .ToListAsync();
     }
 
-    // GET: api/Odbiorca/5 - DODAJ TE METODÊ
+    // GET: api/Odbiorca/5
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin,Magazynier")]
     public async Task<ActionResult<Odbiorca>> GetOdbiorca(int id)
@@ -118,7 +118,7 @@ public class OdbiorcaController : ControllerBase
         {
             await _context.SaveChangesAsync();
 
-            // SUKCES – logujemy operacjê
+            
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(OdbiorcaController),
                 nameof(PutOdbiorca),
@@ -158,7 +158,7 @@ public class OdbiorcaController : ControllerBase
             _context.Entry(odbiorca).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            // SUKCES – logujemy operacjê
+            
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(OdbiorcaController),
                 nameof(DeleteOdbiorca),
@@ -168,7 +168,7 @@ public class OdbiorcaController : ControllerBase
         }
         catch (Exception ex)
         {
-            //B£¥D – logujemy wyj¹tek
+            
             await LoggerService.ZapiszB³adAsync(_context, nameof(OdbiorcaController), nameof(DeleteOdbiorca), ex);
             return StatusCode(500, "B³¹d serwera podczas usuwania odbiorcy.");
         }
