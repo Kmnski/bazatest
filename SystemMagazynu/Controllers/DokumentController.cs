@@ -113,10 +113,10 @@ public class DokumentController : ControllerBase
             try
             {
                 // 1. Walidacja kontrahenta
-                if ((dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW") && (dokumentDto.DostawcaId == null || dokumentDto.DostawcaId == 0))
+                if ((dokumentDto.Typ == "PZ") && (dokumentDto.DostawcaId == null || dokumentDto.DostawcaId == 0))
                     return BadRequest("Dostawca jest wymagany dla dokumentów przyjêcia");
 
-                if ((dokumentDto.Typ == "WZ" || dokumentDto.Typ == "RW") && (dokumentDto.OdbiorcaId == null || dokumentDto.OdbiorcaId == 0))
+                if ((dokumentDto.Typ == "WZ") && (dokumentDto.OdbiorcaId == null || dokumentDto.OdbiorcaId == 0))
                     return BadRequest("Odbiorca jest wymagany dla dokumentów wydania");
 
                 // 2. Walidacja magazynu i u¿ytkownika
@@ -130,7 +130,7 @@ public class DokumentController : ControllerBase
                 Dostawca? dostawca = null;
                 Odbiorca? odbiorca = null;
 
-                if (dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW")
+                if (dokumentDto.Typ == "PZ")
                 {
                     dostawca = await _context.Dostawcy.FindAsync(dokumentDto.DostawcaId);
                     if (dostawca == null) return BadRequest("Dostawca nie istnieje");
@@ -332,12 +332,12 @@ public class DokumentController : ControllerBase
                 }
 
                 // Walidacja kontrahenta
-                if ((dokumentDto.Typ == "PZ" || dokumentDto.Typ == "PW") && !dokumentDto.DostawcaId.HasValue)
+                if ((dokumentDto.Typ == "PZ") && !dokumentDto.DostawcaId.HasValue)
                 {
                     result = BadRequest("Dostawca jest wymagany dla dokumentów przyjêcia");
                     return;
                 }
-                if ((dokumentDto.Typ == "WZ" || dokumentDto.Typ == "RW") && !dokumentDto.OdbiorcaId.HasValue)
+                if ((dokumentDto.Typ == "WZ") && !dokumentDto.OdbiorcaId.HasValue)
                 {
                     result = BadRequest("Odbiorca jest wymagany dla dokumentów wydania");
                     return;
