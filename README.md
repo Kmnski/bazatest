@@ -312,22 +312,60 @@ END
 
 ## 4. Zrzuty ekranu
 
-Poniżej przedstawiono przykładowe zrzuty ekranu działającej aplikacji:
+
 
 ### Ekran logowania
-![Ekran logowania](screenshots/login.png)
+![Ekran logowania](images/login.png)
 
 ### Dashboard
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](images/dashboard.png)
 
 ### Lista dokumentów
-![Lista dokumentów](screenshots/dokumenty.png)
+![Lista dokumentów](images/dokumenty.png)
 
 ### Dodawanie dokumentu
-![Dodawanie dokumentu](screenshots/dodawanie_dokumentu.png)
+![Dodawanie dokumentu](images/dodawanie_dokumentu.PNG)
 
-### Podgląd materiałów
-![Podgląd materiałów](screenshots/materialy.png)
+### Podgląd dostawców
+![Podglad dostawcow](images/dostawcy.PNG)
 
-### Rezerwacje materiałów
-![Rezerwacje materiałów](screenshots/rezerwacje.png)
+### Podgląd odbiorcow
+![Podglad odbiorcow](images/odbiorcy.PNG)
+
+### Zatwierdzanie dokumentów
+![Zatwierdzanie dokumentów](images/zatwierdzanie_dokumentow.PNG)
+
+### Zarządzanie uzytkownikami
+![Zarządzanie uzytkownikami](images/zarzadzanie_uzytkownikami.PNG)
+
+
+## 5.Instrukcja uruchomienia projektu
+## Sklonowanie repozytoriu
+
+```bash
+git clone https://github.com/twoje-repozytorium/nazwa-projektu.git
+cd nazwa-projektu
+
+```
+### Uruchomienie backendu
+```bash
+cd backend
+dotnet ef database update
+dotnet run
+
+```
+### Uruchomienie frontendu
+```bash
+cd fronend
+npm install
+npm start
+
+```
+
+
+### Uruchomienie testow
+```bash
+cd SystemMagazynuTests
+dotnet test
+
+```
