@@ -87,7 +87,7 @@ END
 **Opis działania:**
 Procedura wyszukuje aktywnych dostawców w tabeli `Dostawcy` po polach: Nazwa, Email, Telefon. Zwraca dopasowane wyniki posortowane alfabetycznie po nazwie.
 
-**Przykładowy kod procedury:**
+**Kod procedury:**
 ```sql
 CREATE OR ALTER PROCEDURE sp_SearchDostawcy
     @SearchQuery NVARCHAR(100)
@@ -307,3 +307,27 @@ BEGIN
     WHERE z.Typ = 'WZ';
 
 END
+
+```
+
+## 4. Zrzuty ekranu
+
+Poniżej przedstawiono przykładowe zrzuty ekranu działającej aplikacji:
+
+### Ekran logowania
+![Ekran logowania](screenshots/login.png)
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Lista dokumentów
+![Lista dokumentów](screenshots/dokumenty.png)
+
+### Dodawanie dokumentu
+![Dodawanie dokumentu](screenshots/dodawanie_dokumentu.png)
+
+### Podgląd materiałów
+![Podgląd materiałów](screenshots/materialy.png)
+
+### Rezerwacje materiałów
+![Rezerwacje materiałów](screenshots/rezerwacje.png)
