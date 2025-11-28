@@ -47,3 +47,8 @@ oraz bieżące monitorowanie zasobów.
 System stanowi nowoczesne narzędzie wspierające pracę magazynu, 
 usprawniające obieg dokumentów i zapewniające przejrzystość operacji logistycznych.
 </p>
+
+<h2><b>2. Diagram ERD</b></h2>
+
+![Diagram ERD](ERD.png)
+
