@@ -8,7 +8,7 @@ public class Dokument
     public string Status { get; set; } = string.Empty;
     public string NumerDokumentu { get; set; } = string.Empty;
 
-    // Klucze obce
+    
     public int? DostawcaId { get; set; }
     public Dostawca? Dostawca { get; set; }
 

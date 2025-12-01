@@ -19,7 +19,7 @@ public class DostawcaController : ControllerBase
         _context = context;
     }
 
-    // GET: api/Dostawca - zwraca tylko aktywnych dostawców
+    // GET: api/Dostawca
     [HttpGet]
     [Authorize(Roles = "Admin,Magazynier")]
     public async Task<ActionResult<IEnumerable<Dostawca>>> GetDostawcy()
@@ -66,7 +66,7 @@ public class DostawcaController : ControllerBase
             _context.Dostawcy.Add(dostawca);
             await _context.SaveChangesAsync();
 
-            // 3. SUKCES – logujemy operacjê
+            // LOG
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(DostawcaController),
                 nameof(PostDostawca),
@@ -76,7 +76,7 @@ public class DostawcaController : ControllerBase
         }
         catch (Exception ex)
         {
-            // 4. B£¥D – logujemy wyj¹tek
+            // LOG BLAD
             await LoggerService.ZapiszB³adAsync(_context, nameof(DostawcaController), nameof(PostDostawca), ex);
             return StatusCode(500, "B³¹d serwera podczas dodawania dostawcy.");
         }
@@ -114,7 +114,7 @@ public class DostawcaController : ControllerBase
         {
             await _context.SaveChangesAsync();
 
-            // SUKCES – logujemy operacjê
+            // LOG
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(DostawcaController),
                 nameof(PutDostawca),
@@ -124,6 +124,7 @@ public class DostawcaController : ControllerBase
         }
         catch (DbUpdateConcurrencyException ex)
         {
+            // LOG BLAD
             await LoggerService.ZapiszB³adAsync(_context, nameof(DostawcaController), nameof(PutDostawca), ex);
             if (!DostawcaExists(id))
                 return NotFound();
@@ -131,12 +132,13 @@ public class DostawcaController : ControllerBase
         }
         catch (Exception ex)
         {
+            //LOG BLAD
             await LoggerService.ZapiszB³adAsync(_context, nameof(DostawcaController), nameof(PutDostawca), ex);
             return StatusCode(500, "B³¹d serwera podczas aktualizacji dostawcy.");
         }
     }
 
-    // DELETE: api/Dostawca/5 - miêkkie usuwanie
+    // DELETE: api/Dostawca/5 
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin,Magazynier")]
     public async Task<IActionResult> DeleteDostawca(int id)
@@ -155,7 +157,7 @@ public class DostawcaController : ControllerBase
             _context.Entry(dostawca).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            //SUKCES – logujemy operacjê
+            //LOG
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(DostawcaController),
                 nameof(DeleteDostawca),
@@ -165,7 +167,7 @@ public class DostawcaController : ControllerBase
         }
         catch (Exception ex)
         {
-            // B£¥D – logujemy wyj¹tek
+            // LOG BLAD
             await LoggerService.ZapiszB³adAsync(_context, nameof(DostawcaController), nameof(DeleteDostawca), ex);
             return StatusCode(500, "B³¹d serwera podczas usuwania dostawcy.");
         }

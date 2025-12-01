@@ -198,9 +198,9 @@ public class DokumentController : ControllerBase
                 if (dokumentDto.Typ == "WZ")
                 {
                     var sql = @"
-        INSERT INTO RezerwacjeMaterialow 
-            (MaterialId, MagazynId, DokumentId, ZarezerwowanaIlosc, DataRezerwacji)
-        VALUES (@MaterialId, @MagazynId, @DokumentId, @ZarezerwowanaIlosc, @DataRezerwacji)";
+                            INSERT INTO RezerwacjeMaterialow 
+                                (MaterialId, MagazynId, DokumentId, ZarezerwowanaIlosc, DataRezerwacji)
+                            VALUES (@MaterialId, @MagazynId, @DokumentId, @ZarezerwowanaIlosc, @DataRezerwacji)";
 
                     foreach (var p in dokumentDto.Pozycje)
                     {
@@ -293,7 +293,7 @@ public class DokumentController : ControllerBase
 
             string nowyNumer = $"{typ}/{rok}/{(maxNumer + 1):000000}";
 
-            // Sprawdzenie, czy numer ju¿ istnieje (race-condition)
+            // Sprawdzenie, czy numer ju¿ istnieje
             bool exists = await _context.Dokumenty
                 .AnyAsync(d => d.NumerDokumentu == nowyNumer, cancellationToken);
 
@@ -374,7 +374,7 @@ public class DokumentController : ControllerBase
                 // Generowanie nowego numeru dokumentu
                 var numerDokumentu = await GenerujNumerDokumentuAsync(dokumentDto.Typ, dokumentDto.Data, cancellationToken);
 
-                // Aktualizacja dokumentu z obs³ug¹ nullable
+                // Aktualizacja dokumentu
                 await _context.Database.ExecuteSqlRawAsync(
                     "UPDATE Dokumenty SET Typ = {0}, Data = {1}, MagazynId = {2}, DostawcaId = {3}, OdbiorcaId = {4}, Status = {5}, NumerDokumentu = {6} WHERE IdDokumentu = {7}",
                     dokumentDto.Typ,
@@ -540,7 +540,7 @@ public class DokumentController : ControllerBase
             return NotFound($"Dokument o ID {id} nie istnieje");
         }
 
-        // U¯YJ POPRAWNEJ NAZWY DbSet - sprawdŸ jak masz w MagazynDbContext
+        
         var pozycje = await _context.PozycjeDokumentow 
             .Where(p => p.DokumentId == id)
             .Include(p => p.Material)
@@ -607,7 +607,7 @@ public class DokumentController : ControllerBase
             if (dokument.Status != "oczekujacy")
                 return BadRequest("Dokument nie jest w statusie oczekuj¹cym");
 
-            // U¯YJ ExecuteSqlRawAsync ZAMIAST SaveChangesAsync
+
             await _context.Database.ExecuteSqlRawAsync(
                 "UPDATE Dokumenty SET Status = 'zatwierdzony' WHERE IdDokumentu = {0}",
                 id);

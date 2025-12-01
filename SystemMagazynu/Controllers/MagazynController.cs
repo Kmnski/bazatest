@@ -37,7 +37,7 @@ public class MagazynController : ControllerBase
             return NotFound();
         }
 
-        // Pobierz materia³y dostêpne w tym magazynie ze stanami magazynowymi
+        // Pobieranie materialow dostêpne w tym magazynie ze stanami magazynowymi
         var materials = await _context.StanyMagazynowe
             .Where(sm => sm.MagazynId == id && sm.Ilosc > 0)
             .Include(sm => sm.Material)

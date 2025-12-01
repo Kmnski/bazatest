@@ -7,7 +7,7 @@ public class MagazynDbContext : DbContext
 {
 	public MagazynDbContext(DbContextOptions<MagazynDbContext> options) : base(options) { }
 
-	// Twoje tabele
+	// Tabele
 	public DbSet<Material> Materialy { get; set; }
 	public DbSet<Dostawca> Dostawcy { get; set; }
 	public DbSet<Odbiorca> Odbiorcy { get; set; }
@@ -32,18 +32,18 @@ public class MagazynDbContext : DbContext
 		modelBuilder.Entity<Uzytkownik>().HasKey(u => u.Id);
         modelBuilder.Entity<RezerwacjaMaterialu>().HasKey(r => r.IdRezerwacji);
 
-        // Klucz z³o¿ony dla StanMagazynowy
+        // Klucz z³o¿ony
         modelBuilder.Entity<StanMagazynowy>()
 			.HasKey(s => new { s.MagazynId, s.MaterialId });
 
-		// KONFIGURACJA PÓL DECIMAL - DODAJ TE LINIJKI:
+		// KONFIGURACJA PÓL DECIMAL
 		modelBuilder.Entity<PozycjaDokumentu>()
 			.Property(p => p.Ilosc)
-			.HasPrecision(10, 2); // 10 cyfr, 2 po przecinku
+			.HasPrecision(10, 2);
 
 		modelBuilder.Entity<StanMagazynowy>()
 			.Property(s => s.Ilosc)
-			.HasPrecision(10, 2); // 10 cyfr, 2 po przecinku
+			.HasPrecision(10, 2);
 
         modelBuilder.Entity<Dokument>(entity =>
         {
@@ -98,7 +98,7 @@ public class MagazynDbContext : DbContext
 			.HasForeignKey(d => d.UzytkownikId);
         modelBuilder.Entity<Uzytkownik>()
         .Property(u => u.Rola)
-        .HasConversion<string>()  // Zamienia enum na string w bazie mozna usunac chyba?
+        .HasConversion<string>()
         .IsRequired(false);
 
         modelBuilder.Entity<RezerwacjaMaterialu>(entity =>

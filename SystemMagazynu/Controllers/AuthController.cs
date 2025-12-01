@@ -35,7 +35,7 @@ public class AuthController : ControllerBase
         
         Rola? rola = null;
 
-        // TYLKO pierwszy u¿ytkownik dostaje admina
+        
         if (!await _context.Uzytkownicy.AnyAsync())
         {
             rola = Rola.Admin;
@@ -125,7 +125,6 @@ public class AuthController : ControllerBase
         user.Rola = dodajRoleDto.Rola;
         await _context.SaveChangesAsync();
 
-        // Poprawiona linia - bez operatora ? dla enum
         string rolaDisplay = dodajRoleDto.Rola == Rola.Brak ? "Brak" : dodajRoleDto.Rola.ToString();
         return Ok(new { message = $"Przydzielono rolê {rolaDisplay} dla {user.Email}" });
     }

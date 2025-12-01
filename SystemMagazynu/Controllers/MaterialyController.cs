@@ -47,7 +47,7 @@ public class MaterialyController : ControllerBase
     [Authorize(Roles = "Admin,Magazynier")]
     public async Task<ActionResult<Material>> PostMaterial(Material material)
     {
-        // 1. WALIDACJA
+        // WALIDACJA
         if (string.IsNullOrWhiteSpace(material.Nazwa))
             return BadRequest("Nazwa materia³u jest wymagana");
 
@@ -56,11 +56,11 @@ public class MaterialyController : ControllerBase
 
         try
         {
-            // 2. ZAPIS
+            // ZAPIS
             _context.Materialy.Add(material);
             await _context.SaveChangesAsync();
 
-            // 3. LOG
+            // LOG
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(MaterialyController),
                 nameof(PostMaterial),
@@ -71,7 +71,7 @@ public class MaterialyController : ControllerBase
         }
         catch (Exception ex)
         {
-            // 4. LOGOWANIE B£ÊDU
+            // LOG BLAD
             await LoggerService.ZapiszB³adAsync(_context,
                 nameof(MaterialyController),
                 nameof(PostMaterial),

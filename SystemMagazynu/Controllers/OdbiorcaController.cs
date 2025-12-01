@@ -68,7 +68,7 @@ public class OdbiorcaController : ControllerBase
             _context.Odbiorcy.Add(odbiorca);
             await _context.SaveChangesAsync();
 
-            // 3. SUKCES – logujemy operacjê
+            // 3. LOG
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(OdbiorcaController),
                 nameof(PostOdbiorca),
@@ -78,7 +78,7 @@ public class OdbiorcaController : ControllerBase
         }
         catch (Exception ex)
         {
-            // 4. B£¥D – logujemy wyj¹tek
+            // 4. LOG BLAD
             await LoggerService.ZapiszB³adAsync(_context, nameof(OdbiorcaController), nameof(PostOdbiorca), ex);
             return StatusCode(500, "B³¹d serwera podczas dodawania odbiorcy.");
         }
@@ -102,7 +102,7 @@ public class OdbiorcaController : ControllerBase
         if (string.IsNullOrWhiteSpace(odbiorca.Adres))
             return BadRequest("Adres odbiorcy jest wymagany");
 
-        // 2. ZNajdŸ istniej¹cego, aktywnego odbiorcê
+        // 2. Szukanie odbiorcy
         var existingOdbiorca = await _context.Odbiorcy
             .Where(o => o.CzyAktywny)
             .FirstOrDefaultAsync(o => o.IdOdbiorcy == id);
@@ -118,7 +118,7 @@ public class OdbiorcaController : ControllerBase
         {
             await _context.SaveChangesAsync();
 
-            
+            // LOG
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(OdbiorcaController),
                 nameof(PutOdbiorca),
@@ -128,6 +128,7 @@ public class OdbiorcaController : ControllerBase
         }
         catch (DbUpdateConcurrencyException ex)
         {
+            // LOG BLAD
             await LoggerService.ZapiszB³adAsync(_context, nameof(OdbiorcaController), nameof(PutOdbiorca), ex);
             if (!OdbiorcaExists(id))
                 return NotFound();
@@ -135,12 +136,14 @@ public class OdbiorcaController : ControllerBase
         }
         catch (Exception ex) 
         {
+            // LOG BLAD
+
             await LoggerService.ZapiszB³adAsync(_context, nameof(OdbiorcaController), nameof(PutOdbiorca), ex);
             return StatusCode(500, "B³¹d serwera podczas aktualizacji odbiorcy.");
         }
     }
     
-    // DELETE: api/Odbiorca/5 - miêkkie usuwanie
+    // DELETE: api/Odbiorca/5
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin,Magazynier")]
     public async Task<IActionResult> DeleteOdbiorca(int id)
@@ -158,7 +161,7 @@ public class OdbiorcaController : ControllerBase
             _context.Entry(odbiorca).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            
+            // LOG
             await LoggerService.ZapiszOperacjeAsync(_context,
                 nameof(OdbiorcaController),
                 nameof(DeleteOdbiorca),
@@ -168,7 +171,7 @@ public class OdbiorcaController : ControllerBase
         }
         catch (Exception ex)
         {
-            
+            // LOG BLAD
             await LoggerService.ZapiszB³adAsync(_context, nameof(OdbiorcaController), nameof(DeleteOdbiorca), ex);
             return StatusCode(500, "B³¹d serwera podczas usuwania odbiorcy.");
         }

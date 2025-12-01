@@ -30,7 +30,7 @@ public static class LoggerService
 			Kontroler = kontroler,
 			Akcja = akcja,
 			Komunikat = komunikat,
-			StackTrace = null,          // nie jest b³êdem
+			StackTrace = null,
 			Data = DateTime.Now
 		};
 		context.LogiBledow.Add(log);
@@ -60,7 +60,7 @@ public static class LoggerService
         }
         catch
         {
-            // Jeœli logowanie siê nie uda, zignoruj b³¹d aby nie maskowaæ oryginalnego wyj¹tku
+            
         }
     }
 }
