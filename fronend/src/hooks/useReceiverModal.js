@@ -1,4 +1,4 @@
-// src/hooks/useReceiverModal.js
+
 import { useState } from 'react';
 
 export function useReceiverModal() {

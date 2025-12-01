@@ -6,8 +6,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Dokumenty, które zmieniły status na zatwierdzony
--- CTE, które wyłapuje dokumenty zmieniające status na 'zatwierdzony'
+
     WITH Zatwierdzone AS (
         SELECT i.IdDokumentu, i.Typ, i.MagazynId
         FROM inserted i
@@ -30,7 +29,7 @@ BEGIN
         INSERT (MagazynId, MaterialId, Ilosc)
         VALUES (source.MagazynId, source.MaterialId, source.Ilosc);
 
-
+     -- WZ - usuwamy powiązane rezerwacje
     WITH Zatwierdzone AS (
         SELECT i.IdDokumentu, i.Typ, i.MagazynId
         FROM inserted i

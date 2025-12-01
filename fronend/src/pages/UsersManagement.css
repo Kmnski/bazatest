@@ -1,4 +1,4 @@
-/* UsersManagement.css - Specyficzne style tylko dla zarządzania użytkownikami */
+
 .users-management {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -232,7 +232,7 @@
     color: #e17055;
 }
 
-/* Reset dla elementów wewnątrz users management */
+
 .users-management table,
 .users-management th,
 .users-management td,

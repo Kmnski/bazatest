@@ -6,7 +6,7 @@ BEGIN
 
     DECLARE @SearchTerm NVARCHAR(102) = '%' + @SearchQuery + '%';
 
-    SELECT 
+    SELECT
         IdOdbiorcy,
         Nazwa,
         Email,
@@ -14,7 +14,7 @@ BEGIN
         Adres,
         CzyAktywny
     FROM Odbiorcy
-    WHERE 
+    WHERE
         (Nazwa LIKE @SearchTerm
         OR Email LIKE @SearchTerm
         OR Telefon LIKE @SearchTerm

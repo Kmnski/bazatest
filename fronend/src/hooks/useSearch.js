@@ -81,7 +81,7 @@ export const useSearch = (fetchAllFunction, searchFunction = null) => {
         // Filtruj lokalnie
         filterData(searchQuery);
       }
-    }, 300); // Krótszy debounce dla lepszej responsywności
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery, searchFunction, performSearch, filterData]);

@@ -1,4 +1,4 @@
--- 3. Trigger po dodaniu rezerwacji (zmniejsza dostêpne iloœci w magazynie)
+-- 3. Trigger po dodaniu rezerwacji (zmniejsza dostÄ™pne iloÅ›ci w magazynie)
 CREATE TRIGGER RezerwacjaPoDodaniu
 ON RezerwacjeMaterialow
 AFTER INSERT, DELETE
@@ -6,7 +6,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Wstawienie rezerwacji - zmniejszamy dostêpne iloœci
+    -- Wstawienie rezerwacji - zmniejszamy dostÄ™pne iloÅ›ci
     UPDATE sm
     SET sm.Ilosc = sm.Ilosc - i.ZarezerwowanaIlosc
     FROM StanyMagazynowe sm

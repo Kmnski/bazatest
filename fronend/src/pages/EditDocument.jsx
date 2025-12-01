@@ -1,4 +1,4 @@
-// src/components/EditDocument.js
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { documentsAPI, warehousesAPI, suppliersAPI, receiversAPI, materialsAPI } from '../api';
@@ -111,7 +111,7 @@ function EditDocument({ user, onLogout }) {
         materialId: pozycja.materialId,
         materialNazwa: material ? material.nazwa : '',
         materialJednostka: material ? material.jednostka : '',
-        maxIlosc: null // Dla edycji nie potrzebujemy max ilości
+        maxIlosc: null
       };
     });
 
@@ -157,7 +157,7 @@ function EditDocument({ user, onLogout }) {
     }
   };
 
-  // Pozostałe funkcje pozostają takie same jak w NewDocument.js
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
@@ -423,7 +423,7 @@ function EditDocument({ user, onLogout }) {
         };
       }
 
-      // Użyj metody update zamiast create
+      
       const response = await documentsAPI.updateDokument(id, documentData);
       
       navigate('/documents');

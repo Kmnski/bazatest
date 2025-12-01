@@ -1,5 +1,5 @@
 import React from 'react';
-import './Dashboard.css'; // Importujemy TEN SAM CSS co Dashboard
+import './Dashboard.css';
 
 function Test() {
   return (

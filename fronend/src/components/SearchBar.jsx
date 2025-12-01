@@ -1,4 +1,4 @@
-// src/components/SearchBar.js
+
 import React, { useRef, useEffect } from 'react';
 
 function SearchBar({ 
@@ -17,7 +17,7 @@ function SearchBar({
   }, []);
 
   const handleInputChange = (e) => {
-    onSearchChange(e.target.value); // Pozwól wpisać cokolwiek
+    onSearchChange(e.target.value);
   };
 
   return (

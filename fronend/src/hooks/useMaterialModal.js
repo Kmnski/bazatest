@@ -1,4 +1,4 @@
-// src/hooks/useMaterialModal.js
+
 import { useState } from 'react';
 
 export function useMaterialModal() {

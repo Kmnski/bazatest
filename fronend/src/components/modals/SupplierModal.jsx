@@ -1,4 +1,4 @@
-// src/components/SupplierModal.js
+
 import React from 'react';
 
 function SupplierModal({ 
